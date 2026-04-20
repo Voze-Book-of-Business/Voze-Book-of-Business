@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MHC - Org Chart & Engagement Scorecard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#D5DAE1;color:#1E293B;line-height:1.5}
+.container{max-width:1600px;margin:0 auto;padding:20px}
+.hero{margin-bottom:40px;padding-bottom:30px;border-bottom:2px solid #E2E8F0;background:linear-gradient(135deg,#1E293B 0%,#0F172A 100%);padding:30px 20px;margin:-20px -20px 40px -20px;border-radius:0}
+.logo{font-size:48px;font-weight:700;color:#F59E0B;margin-bottom:24px;letter-spacing:1px}
+.subtitle{font-size:18px;color:#E2E8F0;margin-bottom:30px}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:15px}
+.stat-item{background-color:#FFFFFF;border:1px solid #E2E8F0;border-radius:8px;padding:15px}
+.stat-label{font-size:12px;text-transform:uppercase;color:#64748B;margin-bottom:5px}
+.stat-value{font-size:28px;font-weight:700;color:#F59E0B}
+.data-date{font-size:13px;color:#E2E8F0;margin-top:5px}
+.filter-section{background-color:#FFFFFF;border:1px solid #E2E8F0;border-radius:8px;padding:20px;margin-bottom:30px}
+.filter-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:15px}
+.filter-row:last-child{margin-bottom:0}
+.filter-group{display:flex;flex-direction:column}
+.filter-label{font-size:12px;text-transform:uppercase;color:#64748B;margin-bottom:8px;font-weight:600}
+input[type="text"],select{background-color:#F8FAFC;border:1px solid #E2E8F0;color:#1E293B;padding:10px 12px;border-radius:6px;font-size:14px}
+input[type="text"]::placeholder{color:#94A3B8}
+input[type="text"]:focus,select:focus{outline:none;border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,0.1)}
+.button-group{display:flex;gap:10px}
+.btn{padding:10px 16px;border-radius:6px;border:1px solid #E2E8F0;background-color:#FFFFFF;color:#1E293B;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.2s}
+.btn:hover{border-color:#F59E0B;color:#F59E0B}
+.btn-primary{background-color:#F59E0B;border-color:#F59E0B;color:#FFFFFF}
+.btn-primary:hover{background-color:#D97706;border-color:#D97706}
+.section-header{font-size:20px;font-weight:700;color:#1E293B;margin-top:30px;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #E2E8F0}
+.card-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:30px}
+.card-container.ceo-level{grid-template-columns:1fr;margin-bottom:40px}
+.card-container.evp-level{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:40px}
+.card-container.directors-level{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:40px}
+.card-container.location-cards{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background-color:#FFFFFF;border:2px solid #E2E8F0;border-radius:10px;padding:20px;transition:all 0.2s;cursor:pointer;border-left:4px solid #F59E0B;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.card:hover{border-color:#CBD5E1;transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,0.1)}
+.card.champion{border-left-color:#10B981;border-right-color:#10B981;border-top-color:#10B981;border-bottom-color:#10B981}
+.card.neutral{border-left-color:#F59E0B;border-right-color:#334155;border-top-color:#334155;border-bottom-color:#334155}
+.card.detractor{border-left-color:#EF4444;border-right-color:#EF4444;border-top-color:#EF4444;border-bottom-color:#EF4444}
+.card-header{display:flex;align-items:center;margin-bottom:12px;gap:12px}
+.avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0}
+.avatar.ceo{background-color:#F59E0B;color:#0F172A}
+.avatar.evp{background-color:#3B82F6;color:#FFF}
+.avatar.director{background-color:#8B5CF6;color:#FFF}
+.avatar.gm{background-color:#10B981;color:#FFF}
+.avatar.pm{background-color:#06B6D4;color:#FFF}
+.avatar.asm{background-color:#F472B6;color:#FFF}
+.avatar.ic{background-color:#A78BFA;color:#FFF}
+.avatar.sm{background-color:#FB923C;color:#FFF}
+.card-info{flex:1}
+.card-name{font-weight:700;font-size:19px;color:#1E293B;margin-bottom:4px}
+.card-title{font-size:15px;color:#64748B;margin-bottom:4px}
+.card-phone{font-size:14px;color:#64748B;margin-top:2px}
+.card-email{font-size:14px;color:#64748B;word-break:break-all}
+.card-linkedin{font-size:13px;margin-top:3px}
+.card-linkedin a{color:#0A66C2;text-decoration:none;font-weight:600}
+.card-linkedin a:hover{text-decoration:underline}
+.card-body{margin-top:12px;padding-top:12px;border-top:1px solid #E2E8F0}
+.engagement-label{font-size:13px;text-transform:uppercase;color:#64748B;font-weight:600}
+.stance-dropdown{width:100%;padding:10px 12px;border:1px solid #E2E8F0;background-color:#F8FAFC;color:#1E293B;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px}
+.stance-dropdown:focus{outline:none;border-color:#F59E0B;box-shadow:0 0 0 2px rgba(245,158,11,0.1)}
+.stance-dropdown.champion{color:#10B981;border-color:#10B981;background-color:rgba(16,185,129,0.05)}
+.stance-dropdown.neutral{color:#F59E0B;border-color:#F59E0B;background-color:rgba(245,158,11,0.05)}
+.stance-dropdown.detractor{color:#EF4444;border-color:#EF4444;background-color:rgba(239,68,68,0.05)}
+.survey-section{margin-top:10px;padding-top:10px;border-top:1px solid #E2E8F0}
+.survey-section-label{font-size:11px;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.org-survey-q{width:100%;border:1px solid #E2E8F0;border-radius:4px;padding:5px 8px;font-size:12px;font-family:inherit;resize:none;min-height:24px;color:#1E293B;background:#F8FAFC;margin-bottom:6px}
+.org-survey-q:focus{outline:none;border-color:#F59E0B;box-shadow:0 0 0 2px rgba(245,158,11,0.1)}
+.org-survey-q::placeholder{color:#94A3B8;font-style:italic}
+.org-survey-label{font-size:10px;color:#64748B;margin-bottom:2px;display:block}
+.location-block{margin-bottom:40px;padding:24px;background-color:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;border-top:3px solid #F59E0B}
+.location-header{font-size:18px;font-weight:700;color:#1E293B;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #E2E8F0}
+.card-location-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.dealer-photo{width:300px;height:200px;border-radius:10px;object-fit:cover;flex-shrink:0;border:2px solid #E2E8F0}
+.dealer-location-info{flex:1;display:flex;flex-direction:column;justify-content:center}
+.dealer-location-name{font-weight:700;font-size:22px;color:#1E293B;margin-bottom:4px}
+.dealer-page-link{font-size:15px;color:#06B6D4;text-decoration:none;font-weight:600}
+.dealer-page-link:hover{text-decoration:underline}
+.tabs-container{margin-bottom:30px}
+.tab-buttons{display:flex;gap:10px;margin-bottom:20px;border-bottom:2px solid #E2E8F0;flex-wrap:wrap}
+.tab-btn{padding:12px 20px;background:none;border:none;border-bottom:3px solid transparent;color:#64748B;cursor:pointer;font-weight:600;font-size:14px;transition:all 0.2s}
+.tab-btn:hover{color:#F59E0B}
+.tab-btn.active{color:#F59E0B;border-bottom-color:#F59E0B}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.hidden{display:none!important}
+.export-section{text-align:center;margin-top:40px;padding-top:20px;border-top:2px solid #E2E8F0}
+.hide-on-filter{display:block}
+.hide-on-filter.hidden{display:none}
+#map-container{background-color:#FFFFFF}
+.leaflet-popup-content-wrapper{background:#FFFFFF;color:#1E293B;border:1px solid #E2E8F0;border-radius:8px}
+.leaflet-popup-tip{background:#FFFFFF}
+.leaflet-popup-content{margin:10px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+@media(max-width:768px){.container{padding:12px}.stats-bar{grid-template-columns:repeat(2,1fr)}.filter-row{grid-template-columns:1fr}.card-container,.card-container.evp-level,.card-container.directors-level{grid-template-columns:1fr}.logo{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <div class="logo">MHC</div>
+        <div class="subtitle">Leadership Org Chart & Engagement Scorecard</div>
+
+        <div id="map-container" style="width:100%;height:500px;border-radius:12px;border:1px solid #E2E8F0;z-index:1;margin-bottom:20px;"></div>
+
+        <div class="stats-bar">
+            <div class="stat-item"><div class="stat-label">Total Personnel</div><div class="stat-value" id="stat-total">0</div></div>
+            <div class="stat-item"><div class="stat-label">Locations</div><div class="stat-value">3</div></div>
+            <div class="stat-item"><div class="stat-label">Champions</div><div class="stat-value" id="stat-champions">0</div></div>
+            <div class="stat-item"><div class="stat-label">Detractors</div><div class="stat-value" id="stat-detractors">0</div></div>
+        </div>
+        <div class="data-date">Engagement Data: April 2026</div>
+    </div>
+
+    <div class="filter-section">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">Search by Name/Title/Location</label>
+                <input type="text" id="search-input" placeholder="Start typing...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Region</label>
+                <select id="region-filter">
+                    <option value="">All Regions</option>
+                    <option value="Corporate">Corporate</option>
+                        <option value="Kansas">Kansas</option>
+                        <option value="Iowa">Iowa</option>
+                        <option value="North Carolina">North Carolina</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Leadership Sentiment</label>
+                <select id="stance-filter">
+                    <option value="">All Sentiments</option>
+                    <option value="champion">Champion</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="detractor">Detractor</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="filter-group">
+                <label class="filter-label">Actions</label>
+                <div class="button-group">
+                    <button class="btn" id="clear-filters">Clear Filters</button>
+                    <button class="btn btn-primary" id="export-btn">Export CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="corporate-section hide-on-filter" id="corporate-section">
+        <div class="section-header">President & CEO</div>
+        <div class="card-container ceo-level" id="ceo-container"></div>
+        <div class="section-header">Executive Vice Presidents</div>
+        <div class="card-container evp-level" id="evp-container"></div>
+        <div class="section-header">Directors</div>
+        <div class="card-container directors-level" id="directors-container"></div>
+    </div>
+
+    <div class="tabs-container hide-on-filter" id="tabs-container">
+        <div class="section-header">Regional Leadership</div>
+        <div class="tab-buttons" id="tab-buttons"></div>
+        <div id="tab-contents"></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="export-section hide-on-filter">
+        <button class="btn btn-primary" id="export-btn-footer">Export All Personnel to CSV</button>
+    </div>
+</div>
+
+<script>
+const phoneNumbers = {
+            "Mark Vaca": "913-961-5863",
+            "Jaden Moody": "515-210-7280",
+            "Andrew Ryan": "580-919-9432",
+            "Charlie Rietz": "515-708-6304",
+            "Gable LaForge": "620-306-1327",
+            "DJ Fox": "248-361-2882",
+            "Bobby Dalton": "515-313-3804",
+            "Karl Brooks": "510-565-9742",
+            "Marcus Freund": "(712) 281-7760",
+            "Will Haney": "(865) 230-2185",
+            "Casey Crum": "(309) 333-0474",
+            "Jackson Catron": "(704) 609-8221"
+};
+const linkedinProfiles = {
+            "Corey Murphy": "https://www.linkedin.com/in/corey-murphy-9b650364/",
+            "Mark Vaca": "https://www.linkedin.com/in/mark-vaca-38564b174/",
+            "Jaden Moody": "https://www.linkedin.com/in/jaden-moody-8920b41a8"
+};
+
+const dealerPhotos = {
+            "Kansas City": {
+                        "img": "https://mhc.com/locations/mhc-kenworth-kansas-city#location-detail-photo",
+                        "page": "https://mhc.com/locations/mhc-kenworth-kansas-city"
+            },
+            "Des Moines": {
+                        "page": "https://mhc.com/locations/"
+            },
+            "Charlotte": {
+                        "page": "https://mhc.com/locations/"
+            },
+            "MHC Kenworth - Dallas": {
+                        "img": "https://mhc.com/locations/mhc-kenworth-denver#location-detail-photo",
+                        "page": "https://mhc.com/locations/mhc-kenworth-denver"
+            },
+            "Dallas": {
+                        "img": "https://mhc.com/locations/mhc-kenworth-dallas#location-detail-photo",
+                        "page": "https://mhc.com/locations/mhc-kenworth-dallas"
+            },
+            "Denver": {
+                        "img": "https://mhc.com/locations/mhc-kenworth-denver#location-detail-photo",
+                        "page": "https://mhc.com/locations/mhc-kenworth-denver"
+            }
+};
+const locationDates = {
+            "Kansas City": {
+                        "lastOnsite": "",
+                        "lastTraining": "04/08/2026"
+            },
+            "Des Moines": {
+                        "lastOnsite": "",
+                        "lastTraining": "04/08/2026"
+            },
+            "Charlotte": {
+                        "lastOnsite": "",
+                        "lastTraining": "04/08/2026"
+            }
+};
+
+const roleColorMap = {
+    'CEO': 'ceo', 'EVP': 'evp', 'Director': 'director', 'GM': 'gm',
+    'PM': 'pm', 'ASM': 'asm', 'IC': 'ic', 'SM': 'sm', 'President': 'ceo'
+};
+
+const allPersonnel = [
+            { name: 'Corey Murphy', title: 'Executive Sponsor', email: 'corey.murphy@mhc.com', role: 'CEO', region: 'Corporate', location: 'Corporate' },
+            { name: 'Mark Vaca', title: 'Branch Manager', email: 'mark.vaca@mhc.com', role: 'GM', region: 'Kansas City', location: 'Kansas City' },
+            { name: 'Jaden Moody', title: 'Branch Manager', email: 'jaden.moody@mhc.com', role: 'GM', region: 'Des Moines', location: 'Des Moines' },
+            { name: 'Andrew Ryan', title: 'Branch Manager', email: 'andrew.ryan@mhc.com', role: 'GM', region: 'Charlotte', location: 'Charlotte' },
+            { name: 'Charlie Rietz', title: 'Parts Manager', email: 'charlie.rietz@mhc.com', role: 'PM', region: 'Des Moines', location: 'Des Moines' },
+            { name: 'Gable LaForge', title: 'Parts Manager', email: 'gable.laforge@MHC.COM', role: 'PM', region: 'Kansas City', location: 'Kansas City' },
+            { name: 'DJ Fox', title: 'Parts Manager', email: 'dj.fox@mhc.com', role: 'PM', region: 'Charlotte', location: 'Charlotte' },
+            { name: 'Bobby Dalton', title: 'Service Manager', email: 'bobby.dalton@mhc.com', role: 'SM', region: 'Des Moines', location: 'Des Moines' },
+            { name: 'Karl Brooks', title: 'Service Manager', email: 'karl.brooks@mhc.com', role: 'SM', region: 'Charlotte', location: 'Charlotte' },
+            { name: 'Marcus Freund', title: 'Regional Sales Manager', email: 'marcus.freund@mhc.com', role: 'ASM', region: 'Corporate', location: 'Des Moines' },
+            { name: 'Will Haney', title: 'Assistant Parts Manager', email: 'will.haney@mhc.com', role: 'PM', region: 'Corporate', location: 'Des Moines' },
+            { name: 'Casey Crum', title: 'Assistant Service Manager', email: 'casey.crum@mhc.com', role: 'SM', region: 'Corporate', location: 'Des Moines' },
+            { name: 'Jackson Catron', title: 'Assistant Parts Manager', email: 'jackson.catron@mhc.com', role: 'PM', region: 'Corporate', location: 'Charlotte' }
+        ];
+
+let stanceData = {};
+let orgSurveyData = {};
+let currentSearchTerm = '';
+let currentRegionFilter = '';
+let currentStanceFilter = '';
+let currentLocationFilter = '';
+
+loadStanceData();
+loadOrgSurveyData();
+initializeCards();
+setupEventListeners();
+updateStats();
+
+function getInitials(name) { return name.split(' ').map(n => n[0]).join('').toUpperCase(); }
+function getRoleColor(role) { return roleColorMap[role] || roleColorMap[role.split(' ')[0].toUpperCase()] || 'pm'; }
+
+function createPersonCard(person) {
+    const stance = stanceData[person.name] || 'neutral';
+    const roleColor = getRoleColor(person.role);
+    const initials = getInitials(person.name);
+    const phone = phoneNumbers[person.name] || '';
+    const linkedin = linkedinProfiles[person.name] || '';
+
+    const card = document.createElement('div');
+    card.className = 'card ' + (stance !== 'unset' ? stance : 'neutral');
+    card.dataset.name = person.name;
+    card.dataset.title = person.title;
+    card.dataset.location = person.location;
+    card.dataset.region = person.region;
+    card.dataset.stance = stance;
+
+    card.innerHTML = `
+        <div class="card-header">
+            <div class="avatar ${roleColor}">${initials}</div>
+            <div class="card-info">
+                <div class="card-name">${person.name}</div>
+                <div class="card-title">${person.title}</div>
+                ${phone ? '<div class="card-phone"><a href="tel:'+phone.replace(/[^+\d]/g,'')+'" style="color:#64748B;text-decoration:none;">&#128222; '+phone+'</a></div>' : ''}
+                ${person.email ? '<div class="card-email">'+person.email+'</div>' : ''}
+                ${linkedin ? '<div class="card-linkedin"><a href="'+linkedin+'" target="_blank" rel="noopener">&#128279; LinkedIn Profile</a></div>' : ''}
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="margin-bottom:10px;">
+                <div class="engagement-label">Leadership Sentiment</div>
+                <select class="stance-dropdown ${stance}" data-person-name="${person.name}">
+                    <option value="neutral" ${stance==='neutral'?'selected':''}>Neutral</option>
+                    <option value="champion" ${stance==='champion'?'selected':''}>Champion</option>
+                    <option value="detractor" ${stance==='detractor'?'selected':''}>Detractor</option>
+                </select>
+            </div>
+            <div class="survey-section">
+                <div class="survey-section-label">Voze Feedback Survey</div>
+                <span class="org-survey-label">Favorite thing about Voze?</span>
+                <textarea class="org-survey-q" data-person="${person.name}" data-q="q1" placeholder="Their answer..." onfocus="this.style.minHeight='40px'" onblur="updateOrgSurvey(this)">${(orgSurveyData[person.name]||{}).q1||''}</textarea>
+                <span class="org-survey-label">Most value for company?</span>
+                <textarea class="org-survey-q" data-person="${person.name}" data-q="q2" placeholder="Their answer..." onfocus="this.style.minHeight='40px'" onblur="updateOrgSurvey(this)">${(orgSurveyData[person.name]||{}).q2||''}</textarea>
+                <span class="org-survey-label">Would change about Voze?</span>
+                <textarea class="org-survey-q" data-person="${person.name}" data-q="q3" placeholder="Their answer..." onfocus="this.style.minHeight='40px'" onblur="updateOrgSurvey(this)">${(orgSurveyData[person.name]||{}).q3||''}</textarea>
+            </div>
+        </div>
+    `;
+
+    const dropdown = card.querySelector('.stance-dropdown');
+    dropdown.addEventListener('change', (e) => {
+        stanceData[person.name] = e.target.value;
+        saveStanceData();
+        refreshCard(person.name);
+        updateStats();
+    });
+    return card;
+}
+
+function refreshCard(name) {
+    const person = allPersonnel.find(p => p.name === name);
+    if (!person) return;
+    document.querySelectorAll('[data-name="'+name+'"]').forEach(old => old.replaceWith(createPersonCard(person)));
+}
+
+function initializeCards() {
+    const ceo = allPersonnel.filter(p => p.role === 'CEO');
+    const ceoC = document.getElementById('ceo-container');
+    ceo.forEach(p => ceoC.appendChild(createPersonCard(p)));
+
+    const evps = allPersonnel.filter(p => p.role === 'EVP');
+    const evpC = document.getElementById('evp-container');
+    evps.forEach(p => evpC.appendChild(createPersonCard(p)));
+
+    const dirs = allPersonnel.filter(p => p.role === 'Director');
+    const dirC = document.getElementById('directors-container');
+    dirs.forEach(p => dirC.appendChild(createPersonCard(p)));
+
+    // Hide empty sections
+    if (ceo.length === 0) { ceoC.previousElementSibling.style.display = 'none'; ceoC.style.display = 'none'; }
+    if (evps.length === 0) { evpC.previousElementSibling.style.display = 'none'; evpC.style.display = 'none'; }
+    if (dirs.length === 0) { dirC.previousElementSibling.style.display = 'none'; dirC.style.display = 'none'; }
+
+    const regions = [...new Set(allPersonnel.filter(p => p.location !== 'Corporate').map(p => p.region))].sort();
+    const tabButtons = document.getElementById('tab-buttons');
+    const tabContents = document.getElementById('tab-contents');
+
+    regions.forEach((region, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (i===0?' active':'');
+        btn.textContent = region;
+        btn.addEventListener('click', () => switchTab(region));
+        tabButtons.appendChild(btn);
+
+        const content = document.createElement('div');
+        content.className = 'tab-content' + (i===0?' active':'');
+        content.id = 'tab-' + region;
+
+        const locs = [...new Set(allPersonnel.filter(p => p.region === region && p.location !== 'Corporate').map(p => p.location))].sort();
+        locs.forEach(loc => {
+            const block = document.createElement('div');
+            block.className = 'location-block';
+            block.dataset.locationName = loc;
+
+            const locationName = loc.replace(/ \(.*\)/, '');
+            const dealerInfo = dealerPhotos[locationName] || dealerPhotos[loc] || null;
+            const dates = locationDates[locationName] || locationDates[loc] || { lastOnsite: '', lastTraining: '' };
+            const hasOnsite = dates.lastOnsite && dates.lastOnsite !== '';
+            const hasTraining = dates.lastTraining && dates.lastTraining !== '';
+
+            let headerHTML = '';
+            if (dealerInfo && dealerInfo.img) {
+                headerHTML = `
+                    <div class="card-location-header">
+                        <img src="${dealerInfo.img}" alt="${locationName}" class="dealer-photo" onerror="this.style.display='none'">
+                        <div class="dealer-location-info">
+                            <div class="dealer-location-name">${loc}</div>
+                            ${dealerInfo.page ? '<a href="'+dealerInfo.page+'" target="_blank" class="dealer-page-link">View Dealer Page</a>' : ''}
+                        </div>
+                        <div style="display:flex; gap:28px; margin-left:auto; align-self:center;">
+                            <div style="text-align:center;">
+                                <div style="font-size:13px; text-transform:uppercase; font-weight:700; color:#64748B; margin-bottom:4px;">Last Onsite</div>
+                                <div style="font-size:17px; font-weight:700; color:${hasOnsite ? '#10B981' : '#94A3B8'};">${dates.lastOnsite || '\u2014'}</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:13px; text-transform:uppercase; font-weight:700; color:#64748B; margin-bottom:4px;">Last Training</div>
+                                <div style="font-size:17px; font-weight:700; color:${hasTraining ? '#3B82F6' : '#94A3B8'};">${dates.lastTraining || '\u2014'}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            } else {
+                headerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <div>
+                            <div class="dealer-location-name">${loc}</div>
+                            ${dealerInfo && dealerInfo.page ? '<a href="'+dealerInfo.page+'" target="_blank" class="dealer-page-link">View Dealer Page</a>' : ''}
+                        </div>
+                        <div style="display:flex; gap:28px;">
+                            <div style="text-align:center;">
+                                <div style="font-size:13px; text-transform:uppercase; font-weight:700; color:#64748B; margin-bottom:4px;">Last Onsite</div>
+                                <div style="font-size:17px; font-weight:700; color:${hasOnsite ? '#10B981' : '#94A3B8'};">${dates.lastOnsite || '\u2014'}</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:13px; text-transform:uppercase; font-weight:700; color:#64748B; margin-bottom:4px;">Last Training</div>
+                                <div style="font-size:17px; font-weight:700; color:${hasTraining ? '#3B82F6' : '#94A3B8'};">${dates.lastTraining || '\u2014'}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            block.innerHTML = '<div class="location-header">' + headerHTML + '</div>';
+
+            const cc = document.createElement('div');
+            cc.className = 'card-container location-cards';
+            allPersonnel.filter(p => p.region === region && p.location === loc).forEach(p => cc.appendChild(createPersonCard(p)));
+            block.appendChild(cc);
+            content.appendChild(block);
+        });
+        tabContents.appendChild(content);
+    });
+}
+
+function switchTab(region) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+    const el = document.getElementById('tab-' + region);
+    if (el) el.classList.add('active');
+}
+
+function setupEventListeners() {
+    document.getElementById('search-input').addEventListener('input', e => { currentSearchTerm = e.target.value.toLowerCase(); applyFilters(); });
+    document.getElementById('region-filter').addEventListener('change', e => { currentRegionFilter = e.target.value; applyFilters(); });
+    document.getElementById('stance-filter').addEventListener('change', e => { currentStanceFilter = e.target.value; applyFilters(); });
+    document.getElementById('clear-filters').addEventListener('click', () => {
+        document.getElementById('search-input').value = '';
+        document.getElementById('region-filter').value = '';
+        document.getElementById('stance-filter').value = '';
+        currentSearchTerm = ''; currentRegionFilter = ''; currentStanceFilter = ''; currentLocationFilter = '';
+        applyFilters();
+        if (typeof updateMarkerHighlight === 'function') updateMarkerHighlight();
+    });
+    document.getElementById('export-btn').addEventListener('click', exportToCSV);
+    document.getElementById('export-btn-footer').addEventListener('click', exportToCSV);
+}
+
+function applyFilters() {
+    document.querySelectorAll('.card').forEach(card => {
+        let show = true;
+        const name = card.dataset.name, title = card.dataset.title, location = card.dataset.location, region = card.dataset.region, stance = card.dataset.stance;
+        if (currentSearchTerm && !name.toLowerCase().includes(currentSearchTerm) && !title.toLowerCase().includes(currentSearchTerm) && !location.toLowerCase().includes(currentSearchTerm)) show = false;
+        if (currentRegionFilter && region !== currentRegionFilter) show = false;
+        if (currentStanceFilter && stance !== currentStanceFilter) show = false;
+        card.classList.toggle('hidden', !show);
+    });
+    document.querySelectorAll('.location-block').forEach(block => {
+        if (currentLocationFilter) {
+            block.style.display = (block.dataset.locationName || '').includes(currentLocationFilter) ? '' : 'none';
+        } else { block.style.display = ''; }
+    });
+    if (currentLocationFilter) {
+        const cs = document.getElementById('corporate-section');
+        if (cs) cs.style.display = 'none';
+    } else {
+        const cs = document.getElementById('corporate-section');
+        if (cs) cs.style.display = '';
+    }
+    updateStats();
+}
+
+function updateStats() {
+    document.getElementById('stat-total').textContent = allPersonnel.length;
+    document.getElementById('stat-champions').textContent = Object.values(stanceData).filter(s => s === 'champion').length;
+    document.getElementById('stat-detractors').textContent = Object.values(stanceData).filter(s => s === 'detractor').length;
+}
+
+function loadStanceData() {
+    const saved = localStorage.getItem('mhc-stance');
+    if (saved) { stanceData = JSON.parse(saved); }
+    else { allPersonnel.forEach(p => { stanceData[p.name] = 'neutral'; }); saveStanceData(); }
+}
+function saveStanceData() { localStorage.setItem('mhc-stance', JSON.stringify(stanceData)); }
+
+function loadOrgSurveyData() {
+    const saved = localStorage.getItem('mhc-survey');
+    if (saved) { orgSurveyData = JSON.parse(saved); }
+}
+function saveOrgSurveyData() { localStorage.setItem('mhc-survey', JSON.stringify(orgSurveyData)); }
+function updateOrgSurvey(el) {
+    const name = el.dataset.person, q = el.dataset.q;
+    if (!orgSurveyData[name]) orgSurveyData[name] = {};
+    orgSurveyData[name][q] = el.value;
+    el.style.minHeight = '24px';
+    saveOrgSurveyData();
+}
+
+function exportToCSV() {
+    let csv = 'Name,Title,Email,Phone,LinkedIn,Location,Region,Role,Sentiment,Favorite Thing,Most Value,Would Change\n';
+    allPersonnel.forEach(p => {
+        const stance = stanceData[p.name] || 'neutral';
+        const phone = phoneNumbers[p.name] || '';
+        const linkedin = linkedinProfiles[p.name] || '';
+        const s = orgSurveyData[p.name] || {};
+        csv += ['"'+p.name+'"','"'+p.title+'"','"'+p.email+'"','"'+phone+'"','"'+linkedin+'"','"'+p.location+'"','"'+p.region+'"','"'+p.role+'"',stance,'"'+(s.q1||'')+'"','"'+(s.q2||'')+'"','"'+(s.q3||'')+'"'].join(',') + '\n';
+    });
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'MHC_Personnel_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+}
+</script>
+
+<script>
+const orgMap = L.map('map-container', {
+    center: [39.0997, -94.5786],
+    zoom: 5,
+    scrollWheelZoom: false,
+    zoomControl: true
+});
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap',
+    maxZoom: 18
+}).addTo(orgMap);
+
+const orgLocations = [
+        {name: 'Kansas City', lat: 39.0997, lng: -94.5786, region: 'Kansas'},
+        {name: 'Des Moines', lat: 41.5868, lng: -93.625, region: 'Iowa'},
+        {name: 'Charlotte', lat: 35.2271, lng: -80.8431, region: 'North Carolina'}
+    ];
+
+const regionColors = { "Kansas": "#FF6B6B", "Iowa": "#4ECDC4", "North Carolina": "#45B7D1" };
+
+orgLocations.forEach(loc => {
+    const color = regionColors[loc.region] || '#F59E0B';
+    const marker = L.circleMarker([loc.lat, loc.lng], {
+        radius: 8, fillColor: color, color: '#000', weight: 1.5, opacity: 1, fillOpacity: 0.9
+    }).addTo(orgMap);
+
+    marker.bindPopup('<strong>' + loc.name + '</strong><br><span style="color:' + color + '">' + loc.region + '</span>');
+    marker.bindTooltip(loc.name, { permanent: true, direction: 'right', offset: [10, 0], className: 'org-label' });
+    marker._orgName = loc.name;
+
+    marker.on('click', function() {
+        currentLocationFilter = currentLocationFilter === loc.name ? '' : loc.name;
+        applyFilters();
+        updateMarkerHighlight();
+    });
+});
+
+function updateMarkerHighlight() {
+    orgMap.eachLayer(function(layer) {
+        if (layer instanceof L.CircleMarker) {
+            if (currentLocationFilter) {
+                const m = orgLocations.find(l => l.name === currentLocationFilter);
+                if (m && layer.getLatLng().lat === m.lat && layer.getLatLng().lng === m.lng) {
+                    layer.setStyle({weight: 3, opacity: 1});
+                } else {
+                    layer.setStyle({weight: 1.5, opacity: 0.5});
+                }
+            } else {
+                layer.setStyle({weight: 1.5, opacity: 1});
+            }
+        }
+    });
+}
+
+const legend = L.control({position: 'bottomleft'});
+legend.onAdd = function() {
+    const div = L.DomUtil.create('div');
+    div.style.cssText = 'background:#FFFFFF;padding:12px 16px;border-radius:8px;border:1px solid #E2E8F0;color:#1E293B;font-family:system-ui,sans-serif;font-size:12px;';
+    div.innerHTML = '<div style="font-weight:700;font-size:14px;color:#F59E0B;margin-bottom:8px;">MHC</div>' +
+        '<div style="font-size:11px;color:#64748B;margin-bottom:10px;">OPERATIONS</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:14px;"><div style="color:#1E293B;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4ECDC4;margin-right:4px;"></span>Iowa</div> <div style="color:#1E293B;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#FF6B6B;margin-right:4px;"></span>Kansas</div> <div style="color:#1E293B;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#45B7D1;margin-right:4px;"></span>North Carolina</div></div>';
+    return div;
+};
+legend.addTo(orgMap);
+
+const labelStyle = document.createElement('style');
+labelStyle.textContent = '.org-label { background:rgba(255,255,255,0.95)!important; color:#1E293B!important; border:1px solid #E2E8F0!important; border-radius:4px!important; padding:2px 6px!important; font-size:11px!important; font-weight:600!important; font-family:system-ui,sans-serif!important; box-shadow:none!important; white-space:nowrap!important; } .org-label::before { border-right-color:rgba(255,255,255,0.95)!important; } .org-label-hidden { display:none!important; }';
+document.head.appendChild(labelStyle);
+
+function resolveOverlaps() {
+    const tooltips = [];
+    orgMap.eachLayer(function(layer) {
+        if (layer instanceof L.CircleMarker && layer.getTooltip()) {
+            const tt = layer.getTooltip();
+            const el = tt.getElement();
+            if (el) {
+                el.classList.remove('org-label-hidden');
+                const rect = el.getBoundingClientRect();
+                tooltips.push({ el, rect, layer });
+            }
+        }
+    });
+    tooltips.sort((a,b) => a.layer.getLatLng().lng - b.layer.getLatLng().lng);
+    const visible = [];
+    tooltips.forEach(t => {
+        const overlaps = visible.some(v => !(t.rect.right < v.rect.left || t.rect.left > v.rect.right || t.rect.bottom < v.rect.top || t.rect.top > v.rect.bottom));
+        if (overlaps) { t.el.classList.add('org-label-hidden'); } else { visible.push(t); }
+    });
+}
+orgMap.on('zoomend moveend', resolveOverlaps);
+setTimeout(resolveOverlaps, 500);
+</script>
+</body>
+</html>

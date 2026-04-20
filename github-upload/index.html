@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andy's Book of Business — Customer Hub</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#D5DAE1;color:#1E293B;min-height:100vh}
+.top-bar{background:linear-gradient(135deg, #1E293B 0%, #0F172A 100%);border-bottom:3px solid #F59E0B;padding:36px 40px;text-align:center}
+.top-bar .industry-tag{font-size:52px;font-weight:900;letter-spacing:10px;color:#F59E0B;text-transform:uppercase;margin-bottom:8px;text-shadow:0 3px 12px rgba(245,158,11,0.2)}
+.top-bar h1{font-size:26px;font-weight:800;letter-spacing:2px;color:#FFFFFF}
+.top-bar .sub{color:#94A3B8;font-size:14px;margin-top:6px}
+.gold{color:#F59E0B}
+
+.stats-strip{display:flex;gap:16px;padding:24px 40px;flex-wrap:wrap}
+.stat{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:10px;padding:16px 28px;min-width:150px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.stat .v{font-size:30px;font-weight:800;color:#D97706}
+.stat .l{font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.stat.stat-onboarding{}
+.stat.stat-pilot{}
+
+.controls{padding:12px 40px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.controls input,.controls select{background:#FFFFFF;border:1px solid #CBD5E1;color:#1E293B;padding:8px 14px;border-radius:6px;font-size:13px}
+.controls input{width:260px}
+.controls label{color:#64748B;font-size:12px;text-transform:uppercase}
+
+/* Section dividers */
+.section-divider{padding:28px 40px 12px;margin-top:12px}
+.section-divider h2{font-size:22px;font-weight:800;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:14px}
+.section-divider h2::after{content:'';flex:1;height:3px;border-radius:2px}
+.section-divider .section-sub{font-size:13px;color:#64748B;margin-top:4px;padding-left:2px}
+.sd-current h2{color:#059669} .sd-current h2::after{background:linear-gradient(90deg,#10B981,transparent)}
+.sd-onboarding h2{color:#2563EB} .sd-onboarding h2::after{background:linear-gradient(90deg,#3B82F6,transparent)}
+.sd-pilot h2{color:#7C3AED} .sd-pilot h2::after{background:linear-gradient(90deg,#8B5CF6,transparent)}
+
+.grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:24px;padding:12px 40px 24px}
+
+.card{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;transition:all 0.2s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.card:hover{border-color:#F59E0B;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.card .accent{position:absolute;top:0;left:0;right:0;height:6px}
+.accent-green{background:#10B981}
+.accent-yellow{background:#F59E0B}
+.accent-red{background:#EF4444}
+.accent-blue{background:linear-gradient(90deg,#3B82F6,#60A5FA)}
+.accent-purple{background:linear-gradient(90deg,#8B5CF6,#A78BFA)}
+
+.card .rank{position:absolute;top:10px;right:16px;font-size:13px;color:#94A3B8;font-weight:700;z-index:2}
+.card .logo-wrap{position:absolute;top:30px;right:10px;width:170px;height:110px;border-radius:10px;background:#FFF;padding:5px;display:flex;align-items:center;justify-content:center;border:3px solid #CBD5E1;overflow:hidden}
+.card .customer-logo{max-width:100%;max-height:100%;object-fit:contain}
+.card h2{font-size:20px;font-weight:800;margin-bottom:4px;padding-right:175px;color:#1E293B;text-decoration:underline;text-underline-offset:4px}
+.card .arr{font-size:26px;font-weight:800;color:#D97706;margin:8px 0;padding-right:185px}
+.card .renewal-tag{font-size:14px;font-weight:600;color:#7C3AED;background:rgba(124, 58, 237, 0.08);padding:4px 14px;border-radius:12px;border:1px solid rgba(124, 58, 237, 0.2);margin-left:10px;vertical-align:middle}
+.card .ytd-expansion{font-size:17px;font-weight:700;margin:2px 0 8px;padding-right:185px}
+.ytd-pos{color:#059669}
+.ytd-neg{color:#DC2626}
+.ytd-zero{color:#94A3B8}
+.card .meta{display:flex;gap:0;flex-direction:column;font-size:15px;color:#475569;margin-bottom:12px}
+.card .meta .meta-item{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid #E2E8F0;border-radius:8px;background:#F8FAFC;width:fit-content;margin-bottom:6px;flex-wrap:wrap}
+.card .meta .meta-label{font-size:13px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.card .meta .contact-name{font-size:17px;font-weight:700;color:#1E293B}
+
+.status-badge{display:inline-block;padding:4px 14px;border-radius:10px;font-size:14px;font-weight:700;text-transform:uppercase}
+.status-green{background:rgba(16, 185, 129, 0.1);color:#059669}
+.status-yellow{background:rgba(245, 158, 11, 0.1);color:#D97706}
+.status-red{background:rgba(239, 68, 68, 0.1);color:#DC2626}
+
+.nps-badge{display:inline-block;padding:4px 14px;border-radius:10px;font-size:14px;font-weight:700;border:1.5px dashed #CBD5E1;color:#94A3B8;margin-left:8px}
+.nps-badge.has-score{border-style:solid}
+.nps-green{border-color:#10B981;color:#059669;background:rgba(16,185,129,0.06)}
+.nps-yellow{border-color:#F59E0B;color:#D97706;background:rgba(245,158,11,0.06)}
+.nps-red{border-color:#EF4444;color:#DC2626;background:rgba(239,68,68,0.06)}
+
+.rep-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700;background:#F1F5F9;color:#475569;border:1px solid #E2E8F0;margin-left:8px}
+.rep-tag.jesse{background:rgba(59,130,246,0.06);border-color:rgba(59,130,246,0.2);color:#2563EB}
+.rep-tag.myles{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.2);color:#059669}
+
+.category-badge{display:inline-block;padding:5px 16px;border-radius:10px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.cat-onboarding{background:rgba(59,130,246,0.08);color:#2563EB;border:1.5px solid rgba(59,130,246,0.25)}
+.cat-pilot{background:rgba(139,92,246,0.08);color:#7C3AED;border:1.5px solid rgba(139,92,246,0.25)}
+
+.card .notes{font-size:15px;color:#475569;margin:8px 0;line-height:1.6}
+.card .framework{border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 14px;margin:10px 0;background:#FAFBFC}
+.card .framework .fw-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #E2E8F0}
+.card .framework .fw-row{font-size:14px;color:#475569;line-height:1.5;margin-bottom:4px}
+.card .framework .fw-row:last-child{margin-bottom:0}
+.card .framework .fw-label{font-weight:700;color:#334155}
+.card .links{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.card .links a{display:inline-flex;align-items:center;gap:4px;padding:9px 16px;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.15s;border:1px solid #E2E8F0;color:#64748B;background:#F8FAFC}
+.card .links a:hover{border-color:#F59E0B;color:#D97706;background:#FFFBEB}
+.card .links a.primary{background:rgba(59,130,246,0.1);border-color:#3B82F6;color:#3B82F6}
+.card .links a.primary:hover{background:rgba(59,130,246,0.25)}
+.card .links a.active{background:rgba(16,185,129,0.1);border-color:#059669;color:#059669}
+
+.no-page{color:#94A3B8;font-size:11px;font-style:italic;margin-top:8px}
+
+.referrals-box{border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 14px;margin:10px 0;background:#FAFBFC}
+.referrals-box .ref-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7C3AED;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.referrals-box .ref-content{font-size:14px;color:#475569;line-height:1.5}
+.referrals-box .ref-none{color:#CBD5E1;font-style:italic;font-size:13px}
+
+.reports-btn{display:inline-flex;align-items:center;gap:4px;padding:9px 16px;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.15s;border:1px solid #7C3AED;color:#7C3AED;background:rgba(124,58,237,0.06);cursor:pointer}
+.reports-btn:hover{background:rgba(124,58,237,0.15);color:#6D28D9}
+.report-list{list-style:none;margin:16px 0;max-height:340px;overflow-y:auto}
+.report-list li{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #E2E8F0;border-radius:8px;margin-bottom:8px;background:#F8FAFC;transition:all 0.15s;cursor:pointer}
+.report-list li:hover{border-color:#7C3AED;background:rgba(124,58,237,0.04)}
+.report-list li.selected{border-color:#7C3AED;background:rgba(124,58,237,0.08)}
+.report-list li input[type="checkbox"]{width:18px;height:18px;accent-color:#7C3AED;cursor:pointer}
+.report-list .report-name{font-size:14px;font-weight:600;color:#1E293B;flex:1}
+.report-list .report-type{font-size:12px;color:#94A3B8;font-weight:500}
+
+.milestone-tracker{border:1.5px solid #E2E8F0;border-radius:8px;padding:12px 14px;margin:10px 0;background:#FAFBFC}
+.milestone-tracker .mt-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #E2E8F0}
+.milestone-tracker.mt-onboarding .mt-title{color:#2563EB}
+.milestone-tracker.mt-pilot .mt-title{color:#7C3AED}
+.milestone-bar{display:flex;gap:4px;margin-bottom:10px}
+.milestone-step{flex:1;height:8px;border-radius:4px;background:#E2E8F0}
+.milestone-step.done{background:#3B82F6}
+.milestone-step.active-step{background:#F59E0B;animation:pulse 2s infinite}
+.milestone-step.done.pilot{background:#8B5CF6}
+.milestone-step.active-step.pilot{background:#F59E0B;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.milestone-labels{display:flex;flex-wrap:wrap;gap:6px;font-size:13px}
+.milestone-labels .ml-item{padding:3px 10px;border-radius:6px;font-weight:600}
+.ml-done{background:rgba(59,130,246,0.08);color:#2563EB}
+.ml-active{background:rgba(245,158,11,0.1);color:#D97706;border:1px solid rgba(245,158,11,0.3)}
+.ml-pending{background:#F1F5F9;color:#94A3B8}
+.ml-done.pilot{background:rgba(139,92,246,0.08);color:#7C3AED}
+
+.location-pills{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.location-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:16px;font-size:13px;font-weight:600;background:#F1F5F9;color:#475569;border:1px solid #E2E8F0}
+.location-pill .lp-count{background:#3B82F6;color:#FFF;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:2px}
+.location-pill.pilot .lp-count{background:#8B5CF6}
+
+.role-breakdown{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.role-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:600;border:1.5px solid #E2E8F0;background:#F8FAFC;color:#475569}
+.role-pill .rp-count{font-weight:800;color:#1E293B;font-size:14px}
+.role-pill.rp-truck{border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.04);color:#2563EB}
+.role-pill.rp-truck .rp-count{color:#1D4ED8}
+.role-pill.rp-parts{border-color:rgba(16,185,129,0.25);background:rgba(16,185,129,0.04);color:#059669}
+.role-pill.rp-parts .rp-count{color:#047857}
+.role-pill.rp-service{border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.04);color:#D97706}
+.role-pill.rp-service .rp-count{color:#B45309}
+.role-pill.rp-managers{border-color:rgba(139,92,246,0.25);background:rgba(139,92,246,0.04);color:#7C3AED}
+.role-pill.rp-managers .rp-count{color:#6D28D9}
+.role-pill.rp-trailer{border-color:rgba(236,72,153,0.25);background:rgba(236,72,153,0.04);color:#DB2777}
+.role-pill.rp-trailer .rp-count{color:#BE185D}
+.role-pill.rp-inside{border-color:rgba(14,165,233,0.25);background:rgba(14,165,233,0.04);color:#0284C7}
+.role-pill.rp-inside .rp-count{color:#0369A1}
+.role-breakdown .rb-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#334155;width:100%;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+.role-breakdown .rb-total{font-size:12px;font-weight:700;color:#64748B;background:#F1F5F9;padding:2px 8px;border-radius:6px}
+
+.days-renewal{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700}
+.days-renewal.dr-urgent{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:#DC2626}
+.days-renewal.dr-soon{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);color:#D97706}
+.days-renewal.dr-ok{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15);color:#059669}
+
+.arpu-tag{display:inline-block;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700;background:#F1F5F9;color:#64748B;margin-left:8px}
+
+footer{text-align:center;padding:20px;color:#94A3B8;font-size:11px;border-top:1px solid #E2E8F0}
+
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;justify-content:center;align-items:center}
+.modal-overlay.active{display:flex}
+.modal-panel{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 20px 25px rgba(0,0,0,0.1)}
+.modal-panel .file-icon{font-size:48px;margin-bottom:16px}
+.modal-panel h3{font-size:18px;font-weight:700;color:#1E293B;margin-bottom:8px}
+.modal-panel .file-type{font-size:12px;color:#64748B;margin-bottom:16px}
+.modal-panel .modal-actions{display:flex;gap:12px;margin-top:20px}
+.modal-panel .btn-modal{flex:1;padding:10px;border-radius:6px;border:1px solid #E2E8F0;color:#1E293B;background:#F8FAFC;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.15s}
+.modal-panel .btn-modal:hover{border-color:#F59E0B;color:#D97706}
+.modal-panel .btn-modal.primary{background:#3B82F6;border-color:#3B82F6;color:#FFF}
+.modal-panel .btn-modal.primary:hover{background:#2563EB}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="industry-tag">COMMERCIAL TRUCKING</div>
+  <h1>ANDY'S <span class="gold">BOOK OF BUSINESS</span></h1>
+  <div class="sub">Customer Hub · <span id="account-count">24</span> Accounts · Voze Account Management</div>
+</div>
+
+<div class="stats-strip" id="stats"></div>
+
+<div class="controls">
+  <label>Search:</label>
+  <input type="text" id="search" placeholder="Filter customers...">
+  <label>Category:</label>
+  <select id="categoryFilter">
+    <option value="all">All</option>
+    <option value="Current">Current Customers</option>
+    <option value="Onboarding">Onboarding</option>
+    <option value="Pilot">Pilot</option>
+  </select>
+  <label>Status:</label>
+  <select id="statusFilter">
+    <option value="all">All</option>
+    <option value="Green">Green</option>
+    <option value="Yellow">Yellow</option>
+    <option value="Red">Red</option>
+  </select>
+  <label>Rep:</label>
+  <select id="repFilter">
+    <option value="all">All</option>
+    <option value="Jesse Miller">Jesse Miller</option>
+    <option value="Myles Brill">Myles Brill</option>
+  </select>
+  <label>Renewal:</label>
+  <select id="renewalFilter">
+    <option value="all">All</option>
+    <option value="thisMonth">This Month</option>
+    <option value="nextMonth">Next Month</option>
+    <option value="quarter">This Quarter</option>
+    <option value="6months">Next 6 Months</option>
+  </select>
+  <label>Sort:</label>
+  <select id="sortBy">
+    <option value="rank">By ARR (High-Low)</option>
+    <option value="name">By Name (A-Z)</option>
+    <option value="status">By Status</option>
+    <option value="renewal">By Renewal (Soonest)</option>
+  </select>
+</div>
+
+<div id="sections-container"></div>
+
+<footer>Andy Olsen · Voze · Last updated April 2026</footer>
+
+<script>
+const customerLogos = {
+  "Premier Truck Group": { url: "https://images.app.ridemotive.com/sg09damey5mqfg6q3n8ias1w1t4m", border: "#C8102E" },
+  "Jackson Group Peterbilt": { url: "https://jgpete.com/wp-content/uploads/2024/06/jgp-newlogo-2024-1.png.avif", border: "#C8102E" },
+  "California Truck Center": { url: "https://www.californiatruckcenters.com/images/california-truck-center-logo.png", border: "#1B3A6B" },
+  "Vanguard": { url: "https://vanguardtrucks.com/wp-content/uploads/2025/05/Updated-VTC-Primary-2-White-1.png", border: "#003DA5", bg: "#003DA5" },
+  "Utility Trailer Sales Southeast Texas": { url: "https://www.utilitytrailers.com/wp-content/uploads/2017/11/utilitytrailers.jpg", border: "#003DA5" },
+  "Reliable Transmission Service": { url: "https://rtsallison.com/themes/RTS/images/logo_header.png", border: "#E31837" },
+  "Doggett Freightliner": { url: "https://www.doggettfreightliner.com/content/img.png", border: "#00529B" },
+  "Truck Center Companies": { url: "logos/truck_center_companies.png", border: "#8B7355", bg: "#3d3d3d" },
+  "Peterbilt of Atlanta": { url: "https://peteatlanta.com/wp-content/uploads/2024/04/Peteatlanta-logo-Header-40124B-265x99.png", border: "#1B3A6B", bg: "#1B3A6B" },
+  "1580 Utility Trailer Utah": { url: "https://mwutility.com/wp-content/uploads/2024/05/logo-3.png", border: "#E31837" },
+  "Truckworx": { url: "https://truckworx.nyc3.cdn.digitaloceanspaces.com/wp-content/uploads/20250417122003/truckworx_logo.png", border: "#D22630" },
+  "Bruckner's": { url: "https://brucknerstprod.wpenginepowered.com/wp-content/uploads/2023/07/cropped-dealer-logo.png", border: "#003DA5", bg: "#003DA5" },
+  "TAG Truck Center": { url: "logos/lonestar_tag.png", border: "#E31837", bg: "#0a0a0a" },
+  "McMahon Truck Centers": { url: "https://mcmahontrucks.com/wp-content/uploads/2024/03/MTC-Logo-No-Tag.svg", border: "#003DA5" },
+  "Jim Hawk Truck Trailers": { url: "logos/jim_hawk.svg", border: "#E31837" },
+  "TranSource, Inc.": { url: "https://www.transourcetrucks.com/images/transourcetrucks-logo.png", border: "#D22630" },
+  "Baltimore Potomac Truck Centers": { url: "https://www.bptruckcenters.com/assets/BP_Logo.png", border: "#003DA5" },
+  "Campbell Supply Company": { url: "https://www.campbellsupply.com/efs/wp/domains/www.campbellsupply.com/wp-content/uploads/2023/06/cropped-image-32.png", border: "#C8102E" },
+  "Lonestar Truck Group": { url: "logos/lonestar_tag.png", border: "#E31837", bg: "#0a0a0a" },
+  "Godwin Group": { url: "logos/godwin_group.png", border: "#00A3E0", bg: "#0a0a0a" },
+  "TranSource Truck & Equipment": { url: "https://www.transourceusa.com/images/transourceusa-logo.png", border: "#D22630" },
+  "Tri-State Truck Center": { url: "https://tristatetruck.com/images/logo_tristate.png", border: "#1B3A6B" },
+  "MHC": { url: "https://mhc.com/-/media/images/components/pagelogos/mhclogo.ashx?h=61&w=216", border: "#003DA5" },
+  "Roberts Truck Center": { url: "https://www.robertstruck.com/images/robertstruckcenter-logo.png", border: "#1B3A6B" },
+};
+
+const customers = [
+  {rank:1, name:"Premier Truck Group", arr:291660, ytdExpansion:0, renewal:"09/30/2028", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Matt Tripp", contactRole:"EVP of Fixed Operations", nps:null, referrals:"", roles:{"Truck Sales": 86, "Parts": 111, "Service": 36, "Managers": 79}, cbrsYTD:1, lastOnsite:"12/12/2025", blockers:"Need to finish loading and completing CDK data and activity reporting", highWide:"Working with Operations team to build out best practice documentation and workflow process", kpis:"", adoption:"", utilization:"", expansion:"Additional Departments. TBD", opps:"",
+   pages:[
+     {label:"Leadership Org Chart", href:"Premier_Truck_Group_Org_Chart.html", type:"active"},
+     {label:"Leader Scorecard (Table)", href:"PTG_Leader_Scorecard.html", type:"primary"},
+     {label:"Executive Overview", href:"#", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1h_5OZhP9-w5p2pPR8USSvngf7XeYF7AR/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/17522191462", type:""},
+   ]},
+  {rank:2, name:"Jackson Group Peterbilt", arr:247200, ytdExpansion:0, renewal:"03/31/2027", status:"Yellow", category:"Current", rep:"Myles Brill", contact:"Ryan Memmott", contactRole:"General Manager", nps:null, referrals:"", roles:{"Truck Sales": 54, "Parts": 25, "Managers": 14, "Inside Sales": 121}, cbrsYTD:0, lastOnsite:"---", blockers:"Reporting complete, but several things were promised that have not been executed on.", highWide:"", kpis:"Need to engage on some Rep insights", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Jackson_Group_Peterbilt_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1giSWeKVUTHtKIK5jNhZIvnv8IXTfLb7p/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/17423503246", type:""},
+   ]},
+  {rank:3, name:"California Truck Center", arr:196140, ytdExpansion:3240, renewal:"03/31/2027", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Whitney Gebhard", contactRole:"VP of Operations", nps:null, referrals:"", roles:{"Truck Sales": 49, "Parts": 9, "Managers": 18, "Inside Sales": 34}, cbrsYTD:1, lastOnsite:"10/02/2025", blockers:"Procede Reporting is not complete. We are not doing truck sales data any more.", highWide:"Onsite With Rick. Andy presenting at their Manager and Reps Annual kickoff", kpis:"", adoption:"", utilization:"", expansion:"Trying to hang on to truck sales and expand in that area", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"California_Truck_Center_Org_Chart.html", type:"active"},
+     {label:"Executive Overview", href:"https://docs.google.com/presentation/d/14sAlZqMApQqfnCXh11wnINk1iQV_wnT62MAMATnLVfs/edit", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1A8cI8-zrdxkL04Qx3omkzN4ukQcQMgvS/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/41662123364", type:""},
+   ]},
+  {rank:4, name:"Vanguard", arr:169920, ytdExpansion:3360, renewal:"12/31/2027", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Ryan Goodlett", contactRole:"Director of Parts", nps:null, referrals:"", roles:{"Truck Sales": 37, "Parts": 29, "Inside Sales": 117, "Managers": 43}, cbrsYTD:0, lastOnsite:"---", blockers:"Updated Customer Response Path Process.", highWide:"Working on some Rep insights and expansion into Service.", kpis:"", adoption:"", utilization:"", expansion:"Service Team", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Vanguard_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1Pukret4x_3iictXdYZsfP54NZ1D1o4Ig/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/9846252125", type:""},
+   ]},
+  {rank:5, name:"Utility Trailer Sales Southeast Texas", arr:159780, ytdExpansion:29340, renewal:"11/30/2028", status:"Yellow", category:"Current", rep:"Myles Brill", contact:"Fadi Kanafani", contactRole:"President", nps:null, referrals:"", roles:{"Truck Sales": 2, "Parts": 75, "Service": 23, "Trailer Sales": 26, "Managers": 44, "Inside Sales": 12}, cbrsYTD:0, lastOnsite:"01/13/2026", blockers:"Hubspot Integration, Companies/Contacts integration, Activity Reporting", highWide:"", kpis:"Rep Insights with managers for value", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Utility_Trailer_Texas_Org_Chart.html", type:"active"},
+     {label:"Adoption Insights", href:"https://docs.google.com/presentation/d/1UKgIc9WuF99PjuQD-JTL4xW-MDgnshfAuRTQoUIA1ts/edit", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1sa3b08zTIqgq4Dm6j5oWS2-pxgQ2yJiN/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/47002689563", type:""},
+   ]},
+  {rank:6, name:"Reliable Transmission Service", arr:112344, ytdExpansion:0, renewal:"05/31/2026", status:"Yellow", category:"Current", rep:"Myles Brill", contact:"", contactRole:"", nps:null, referrals:"", roles:{"Truck Sales": 4, "Managers": 12}, cbrsYTD:0, lastOnsite:"---", blockers:"Orders in the App", highWide:"Erick has been driving this customer", kpis:"", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Reliable_Transmission_Services_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1eUF0kLppq8-Cp4eLpbtkw5QEpQ-KlJ9E/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/20192380791", type:""},
+   ]},
+  {rank:7, name:"Doggett Freightliner", arr:99567, ytdExpansion:3014, renewal:"07/31/2026", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Blake Shurtleff", contactRole:"VP of Parts", nps:null, referrals:"", roles:{"Truck Sales": 36, "Inside Sales": 24, "Managers": 10}, cbrsYTD:0, lastOnsite:"02/03/2026", blockers:"Procede Reporting is not complete. Waiting for an update from Sellers", highWide:"Need to engage more.", kpis:"", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Doggett_Freightliner_Org_Chart.html", type:"active"},
+     {label:"Executive Overview", href:"#", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1G5O1lJwjgeIhO3LuiPRzbzd2PkI-gGGJ/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15858951038", type:""},
+   ]},
+  {rank:8, name:"Truck Center Companies", arr:92496, ytdExpansion:5700, renewal:"02/28/2029", status:"Green", category:"Current", rep:"Jesse Miller", contact:"John Andrews", contactRole:"Director of Parts", nps:null, referrals:"", roles:{"Parts": 81, "Managers": 36, "Inside Sales": 7}, cbrsYTD:0, lastOnsite:"02/09/2026", blockers:"Opportunities and Activity reporting", highWide:"", kpis:"", adoption:"Recently rolled out, working on rep behaviors and driving good habits", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Truck_Center_Companies_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1b-ku5QrSAi6nuRWA8_ISt4TkkkrZ2jqy/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/9805498660", type:""},
+   ]},
+  {rank:9, name:"Peterbilt of Atlanta", arr:80036, ytdExpansion:3180, renewal:"03/31/2027", status:"Red", category:"Current", rep:"Myles Brill", contact:"Renee Perkins", contactRole:"Parts Director", nps:null, referrals:"", roles:{"Truck Sales": 30, "Parts": 16, "Service": 3, "Managers": 10, "Inside Sales": 16}, cbrsYTD:0, lastOnsite:"---", blockers:"Voze Pro to be ready, and DMS Sales data to be completed.", highWide:"", kpis:"Trying to get data squared away. Working on some Rep insights", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Peterbilt_of_Atlanta_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1rQ3O019_ic-IRHyyoIV-nQefpaT02fPs/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15858958633", type:""},
+   ]},
+  {rank:10, name:"1580 Utility Trailer Utah", arr:78274, ytdExpansion:5598, renewal:"01/31/2027", status:"Yellow", category:"Current", rep:"Myles Brill", contact:"Daniel Mower", contactRole:"General Manager", nps:null, referrals:"", roles:{"Parts": 20, "Trailer Sales": 13, "Service": 5, "Managers": 11, "Truck Sales": 6}, cbrsYTD:0, lastOnsite:"---", blockers:"Voze Pro to be ready.", highWide:"Talking today on pricing level set", kpis:"", adoption:"", utilization:"", expansion:"If CRP is fixed, we have inside users we can add", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"1580_Utility_Trailer_Utah_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1GNdz5g7Px867Ugj-U4PSjOeXoXZ_1-bA/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/49741080470", type:""},
+   ]},
+  {rank:11, name:"Truckworx", arr:75600, ytdExpansion:0, renewal:"09/21/2035", status:"Red", category:"Current", rep:"Myles Brill", contact:"Chris Cummings", contactRole:"Parts Director", nps:null, referrals:"", roles:{"Truck Sales": 25, "Parts": 1, "Managers": 21, "Inside Sales": 2}, cbrsYTD:0, lastOnsite:"12/15/2025", blockers:"Karmak Reporting.", highWide:"", kpis:"Working on some Rep Insights to drive value", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Truckworx_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1CCYVyYG3gOVDkrULr-jBvp7h7OIN0e9P/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/17346217779", type:""},
+   ]},
+  {rank:12, name:"Bruckner's", arr:75120, ytdExpansion:19380, renewal:"10/31/2028", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Brian Wade", contactRole:"VP of Parts", nps:null, referrals:"", roles:{"Truck Sales": 54, "Parts": 30, "Managers": 39}, cbrsYTD:0, lastOnsite:"02/04/2026", blockers:"Opportunities and Activity Reporting. Also waiting on DMS Sales data", highWide:"", kpis:"", adoption:"Rolled out Opportunities and trying to get reps habits in place", utilization:"", expansion:"Currently adding new locations. Working with Jesse on these", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Bruckner's_Org_Chart.html", type:"active"},
+     {label:"Executive Overview", href:"https://docs.google.com/presentation/d/11nlzAq_GxRa1MOHs23vVcx7stdg3cQxpy78DhTux_Nk/edit", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1TIHGSabifsMUqe59y7gp3-cnwhJ-p7L0/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15858785665", type:""},
+   ]},
+  {rank:13, name:"TAG Truck Center", arr:68152, ytdExpansion:0, renewal:"01/05/2027", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Amy Thomas", contactRole:"General Manager", nps:null, referrals:"", roles:{"Truck Sales": 31, "Managers": 15}, cbrsYTD:0, lastOnsite:"02/04/2026", blockers:"Customer Response Path process updates, Activity reporting", highWide:"Bit stale, need to re-engage", kpis:"", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"TAG_Truck_Centers_Org_Chart.html", type:"active"},
+     {label:"Customer Business Review", href:"https://docs.google.com/presentation/d/1NnI7DBbIlRlt7wN5_uWv57HvCW8rBUDgpMqKUJMumcI/edit", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/14hA72h5H1c_Pyq-SXTZCqgX7YO9pKOGu/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15763478345", type:""},
+   ]},
+  {rank:14, name:"McMahon Truck Centers", arr:55620, ytdExpansion:0, renewal:"09/30/2026", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Allison Wilhelm", contactRole:"General Manager", nps:null, referrals:"", roles:{"Truck Sales": 36, "Managers": 18}, cbrsYTD:0, lastOnsite:"---", blockers:"Voze Pro and Activity Reporting", highWide:"Trying to re-engage. Just did some extra best practice training.", kpis:"", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"McMahon_Truck_Centers_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1_aRoV_hn-KDJZyGr7MGEpvaDLCWRj1F4/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15166394165", type:""},
+   ]},
+  {rank:15, name:"Jim Hawk Truck Trailers", arr:48222, ytdExpansion:378, renewal:"07/14/2026", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Jim Thornton", contactRole:"President", nps:null, referrals:"", roles:{"Parts": 40, "Service": 7, "Trailer Sales": 9, "Managers": 3}, cbrsYTD:1, lastOnsite:"09/09/2025", blockers:"Customer Response Path process updates, Activity reporting", highWide:"Recently presented at sales conference. Need to follow up with data reporting", kpis:"", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Jim_Hawk_Truck_and_Trailer_Org_Chart.html", type:"active"},
+     {label:"Voze Adoption Analysis", href:"https://docs.google.com/presentation/d/16MLdwI3NyLNrm5EmLQBqdImWrj9c_O4Li9KTbrci6gs/edit", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/11cRgZe9qOkXSVYLKlhY2gL40TzFQef4u/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15119648051", type:""},
+   ]},
+  {rank:16, name:"TranSource, Inc.", arr:39960, ytdExpansion:840, renewal:"05/31/2026", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Darnell Almond", contactRole:"VP of Sales", nps:null, referrals:"", roles:{"Truck Sales": 16, "Managers": 8, "Inside Sales": 12}, cbrsYTD:1, lastOnsite:"04/06/2026", blockers:"Customer Response Path process updates, Activity reporting", highWide:"Presenting this month at their sales conference.", kpis:"", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Transource_Transource_Truck_and_Equipment_Org_Chart.html", type:"active"},
+     {label:"Executive Overview", href:"#", type:""},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/16sezyIHULuvjSiRFqbFlKrBooh-zis5Z/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15166624884", type:""},
+   ]},
+  {rank:17, name:"Baltimore Potomac Truck Centers", arr:39433, ytdExpansion:0, renewal:"12/14/2029", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Bill Koontz", contactRole:"General Manager", nps:null, referrals:"", roles:{"Truck Sales": 16, "Parts": 6, "Managers": 14}, cbrsYTD:0, lastOnsite:"---", blockers:"", highWide:"", kpis:"", adoption:"Ikwo is onsite training this week", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Baltimore_Potomac_Truck_Centers_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1XmBvP9zYjq6ITmCUM_ks0kW5kPTFCl97/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/43720019500", type:""},
+   ]},
+  {rank:18, name:"Campbell Supply Company", arr:31738, ytdExpansion:0, renewal:"07/31/2026", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Mason Campbell", contactRole:"Owner", nps:null, referrals:"", roles:{"Truck Sales": 7, "Managers": 8}, cbrsYTD:0, lastOnsite:"07/30/2025", blockers:"Procede DMS Data, and Activity Reporting", highWide:"", kpis:"", adoption:"Just trained and onboarded Truck sales", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Campbell_Supply_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1e7gqpxUK3nYteqDGDBo_rSgROmot4NON/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15859013256", type:""},
+   ]},
+  {rank:19, name:"Lonestar Truck Group", arr:31080, ytdExpansion:8220, renewal:"09/30/2026", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Pam Hughes", contactRole:"General Manager", nps:null, referrals:"", roles:{"Parts": 7, "Managers": 10, "Inside Sales": 6, "Truck Sales": 4}, cbrsYTD:0, lastOnsite:"12/15/2025", blockers:"Customer Response Path process updates, Activity reporting", highWide:"Bit stale, need to re-engage", kpis:"", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Lonestar_Truck_Group_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1OBVPx9pRT-3toaXmtq0ZpNWbMzdNaGs8/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15869898607", type:""},
+   ]},
+  {rank:20, name:"Godwin Group", arr:27840, ytdExpansion:9240, renewal:"11/30/2026", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Kristie Stockman", contactRole:"Operations Manager", nps:null, referrals:"", roles:{"Truck Sales": 1, "Managers": 20, "Inside Sales": 11}, cbrsYTD:0, lastOnsite:"02/25/2026", blockers:"Customer Response Path process updates, Activity reporting", highWide:"", kpis:"", adoption:"Just did a best practice training. Working on reporting for them.", utilization:"", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Godwin_Group_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1KFH7_LRrXFRfMH9AE_VWA3tph6aJdaRz/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/40288591897", type:""},
+   ]},
+  {rank:21, name:"TranSource Truck & Equipment", arr:12360, ytdExpansion:1500, renewal:"09/20/2026", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Brian Causer", contactRole:"Branch Manager", nps:null, referrals:"", roles:{"Truck Sales": 4, "Managers": 8}, cbrsYTD:0, lastOnsite:"04/07/2026", blockers:"Customer Response Path process updates, Activity reporting", highWide:"", kpis:"", adoption:"", utilization:"Working through mirroring issues.", expansion:"", opps:"", pages:[
+     {label:"Leadership Org Chart", href:"Transource_Transource_Truck_and_Equipment_Org_Chart.html", type:"active"},
+     {label:"Account Plan", href:"https://drive.google.com/file/d/1S1BuIPO5dhke29jEJpJngSRvJ7xr63Yx/view", type:""},
+     {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15763753806", type:""},
+   ]},
+
+  // --- ONBOARDING ---
+  {rank:22, name:"Tri-State Truck Center", arr:72096, ytdExpansion:0, renewal:"---", status:"Green", category:"Onboarding", rep:"Jesse Miller",
+   contact:"Will Maddox", contactRole:"Owner", nps:null, referrals:"", roles:{"Truck Sales": 25, "Managers": 17, "Inside Sales": 2},
+   keyContacts:[{name:"David Ellis", role:"VP of Service"},{name:"Tina Rollins", role:"VP of Parts"}],
+   locations:[{name:"Memphis, TN (HQ)", users:null},{name:"Jackson, TN", users:null},{name:"Tupelo, MS", users:null},{name:"Meridian, MS", users:null}],
+   totalUsers:null,
+   onboardingPhase:"Account Setup",
+   milestones:[{label:"Contract Signed", status:"done"},{label:"Account Setup", status:"active"},{label:"User Provisioning", status:"pending"},{label:"Data Import", status:"pending"},{label:"Training", status:"pending"},{label:"Go Live", status:"pending"}],
+   website:"https://tristatetruck.com/",
+   hubspotDeal:"https://app.hubspot.com/contacts/21678687/record/0-3/57830126385",
+   notes:"Parts, Truck Sales, and Service departments. 4 locations across TN and MS.",
+   pages:[
+     {label:"Leadership Org Chart", href:"Tri-State_Org_Chart.html", type:"active"},{label:"HubSpot Deal", href:"https://app.hubspot.com/contacts/21678687/record/0-3/57830126385", type:"primary"}]},
+
+  {rank:23, name:"Roberts Truck Center", arr:37200, ytdExpansion:0, renewal:"---", status:"Green", category:"Onboarding", rep:"Myles Brill",
+   contact:"", contactRole:"", nps:null, referrals:"", roles:null,
+   keyContacts:[],
+   locations:[{name:"Amarillo, TX (HQ)", users:null},{name:"Lubbock, TX", users:null},{name:"Midland, TX", users:null},{name:"San Angelo, TX", users:null},{name:"Abilene, TX", users:null},{name:"Albuquerque, NM", users:null},{name:"Farmington, NM", users:null}],
+   totalUsers:null,
+   onboardingPhase:"Contract Signed",
+   milestones:[{label:"Contract Signed", status:"done"},{label:"Account Setup", status:"pending"},{label:"User Provisioning", status:"pending"},{label:"Data Import", status:"pending"},{label:"Training", status:"pending"},{label:"Go Live", status:"pending"}],
+   website:"https://www.robertstruck.com/",
+   hubspotDeal:"https://app.hubspot.com/contacts/21678687/record/0-3/59275407641",
+   notes:"Just signed. Voze V2 Semi Annual contract ($37,200 ARR). 7 locations across TX and NM. International, Kenworth, Isuzu, and IC Bus dealer.",
+   pages:[{label:"HubSpot Deal", href:"https://app.hubspot.com/contacts/21678687/record/0-3/59275407641", type:"primary"},{label:"HubSpot Company (TX)", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15858745143", type:""},{label:"HubSpot Company (GA)", href:"https://app.hubspot.com/contacts/21678687/record/0-2/17345832849", type:""}]},
+
+  // --- PILOT ---
+  {rank:24, name:"MHC", arr:0, potentialArr:"$1.4M", ytdExpansion:0, renewal:"---", status:"Green", category:"Pilot", rep:"Jesse Miller",
+   contact:"Erick Henrie", contactRole:"Implementation Manager (Voze)", nps:null, referrals:"", roles:{"Truck Sales": 19, "Parts": 12, "Service": 2, "Managers": 12, "Inside Sales": 25},
+   keyContacts:[{name:"Corey Murphy", role:"Executive Sponsor"},{name:"Andrew Ryan", role:"Branch Mgr - Charlotte"},{name:"Jaden Moody", role:"Branch Mgr - Des Moines"},{name:"Mark Vaca", role:"Branch Mgr - Kansas City"}],
+   locations:[{name:"Kansas City, MO", users:15},{name:"Charlotte, NC", users:26},{name:"Des Moines, IA", users:28}],
+   totalUsers:69,
+   pilotPhase:"90-Day Validation",
+   pilotLaunch:"04/01/2026",
+   pilotGoNoGo:"07/01/2026",
+   fullRollout:"Jul - Oct 2026",
+   milestones:[{label:"Pilot Kickoff", status:"done"},{label:"User Setup", status:"done"},{label:"90-Day Validation", status:"active"},{label:"Go/No-Go Decision", status:"pending"},{label:"Phase 2 Rollout", status:"pending"}],
+   website:"https://mhc.com/",
+   notes:"Pilot across 3 locations with 69 users. 90-day validation runs Apr 2 - Jun 30, 2026.",
+   pages:[
+     {label:"Leadership Org Chart", href:"MHC_Org_Chart.html", type:"active"},{label:"Project Plan", href:"https://drive.google.com/file/d/1-cV_z0aIn5bWYokLgw4EHh33xEfFywVT/view", type:"primary"},{label:"KC Setup", href:"https://drive.google.com/file/d/1Ikc6WpGW7WYW91sudsZTlMLrEyooia6p/view", type:""},{label:"Charlotte Setup", href:"https://drive.google.com/file/d/11SO3W-2tWup0IlhKkiILqVQlW687f1KU/view", type:""},{label:"Des Moines Setup", href:"https://drive.google.com/file/d/1g4Tvjg8HGuK7FjU5dTLc6Ld6GcsB4fP7/view", type:""}]},
+];
+
+const customerReports = {
+  "Premier Truck Group": [
+    { name: "Premier Activity Report (60-Day)", file: "#" },
+    { name: "Premier Salt Lake City Manager Review", file: "https://drive.google.com/file/d/1EPzzM0Lf0QyphBFOGbgPdsPDvb5EUHXC/view" },
+  ],
+  "Truck Center Companies": [
+    { name: "TCC Executive Overview (Updated)", file: "#" },
+    { name: "TCC Salina Manager Report", file: "https://drive.google.com/file/d/1shW6-mT6awifgSM_E6D0fKjZHinASQyr/view" },
+    { name: "TCC Norfolk Manager Report", file: "https://drive.google.com/file/d/1Bq3vcidQfEDeTXRVVyLKBzOWqBhvxmlh/view" },
+    { name: "TCC Liberal Manager Report", file: "https://drive.google.com/file/d/1qR_FTpY-_quCKjU-aNTaaNVSC7seGrCz/view" },
+    { name: "TCC Wichita Manager Report", file: "https://drive.google.com/file/d/1HbeTYbg2dKCuc09FdUkB11aUehhRLCoj/view" },
+    { name: "TCC Council Bluffs Manager Report", file: "https://drive.google.com/file/d/1LV4kqTKIZGa4MOCrNOS_zUxQvkKYKIUJ/view" },
+    { name: "TCC York Manager Report", file: "https://drive.google.com/file/d/1Lt5wP0qYOt_Pkj5I_eoSPizzT1dtEZqg/view" },
+    { name: "TCC Omaha Manager Report", file: "https://drive.google.com/file/d/12YYWMvX2RU9C_429GO3S9EAxSIDhszRL/view" },
+    { name: "TCC Lincoln Manager Report", file: "https://drive.google.com/file/d/1Sioo7Eo6W91OEYRnw29VKrcpOWiEIe3s/view" },
+    { name: "TCC Columbus Manager Report", file: "https://drive.google.com/file/d/1Maj6vw7CS5y247eaE8UHXdUkZ-XoIv8T/view" },
+    { name: "TCC Clear Lake Manager Report", file: "https://drive.google.com/file/d/1ZbPpu97jWzh5MhMZaHQbSb1SfOAkMQu4/view" },
+    { name: "TCC Des Moines Manager Report", file: "https://drive.google.com/file/d/1oEKsQJf5uoEQu2AvWsWiRwJBRAUST_xe/view" },
+    { name: "TCC Waterloo Manager Report", file: "https://drive.google.com/file/d/1I1QQOQhVIc4OoQboDtsI-bP_xbtsLNT0/view" },
+    { name: "TCC Fairmont Manager Report", file: "https://drive.google.com/file/d/16jqY9weHX7Pz-RK-uOzjsbIJP1_pdDqr/view" },
+    { name: "TCC Faribault Manager Report", file: "https://drive.google.com/file/d/1HzXhbhsjhpczkPK7014CezG4uLmqDPBw/view" },
+    { name: "TCC Marshall Manager Report", file: "https://drive.google.com/file/d/1Zjh_JfWhn34JskosS1nQn2CUoFw9eFUI/view" },
+    { name: "TCC Mankato Manager Report", file: "https://drive.google.com/file/d/1vQURFTnuux440nzeWyJa9tXl9bds6VU5/view" },
+  ],
+};
+
+function fmt$(n){ return '$' + n.toLocaleString(); }
+
+function roleBreakdownHtml(roles) {
+  if (!roles || typeof roles !== 'object') return '';
+  const entries = Object.entries(roles).filter(([k,v]) => v > 0);
+  if (entries.length === 0) return '';
+  const total = entries.reduce((s,[,v]) => s + v, 0);
+  const classMap = {"Truck Sales":"rp-truck","Parts":"rp-parts","Service":"rp-service","Managers":"rp-managers","Trailer Sales":"rp-trailer","Inside Sales":"rp-inside"};
+  const pills = entries.map(([k,v]) => `<span class="role-pill ${classMap[k]||''}">${k} <span class="rp-count">${v}</span></span>`).join('');
+  return `<div class="role-breakdown"><div class="rb-title">Adoption by Role <span class="rb-total">${total} users</span></div>${pills}</div>`;
+}
+
+function daysToRenewal(dateStr) {
+  if (!dateStr || dateStr === '---') return '';
+  const rd = parseRenewalDate(dateStr);
+  if (!rd) return '';
+  const now = new Date();
+  const diff = Math.ceil((rd - now) / (1000*60*60*24));
+  if (diff < 0) return `<span class="days-renewal dr-urgent">Expired ${Math.abs(diff)}d ago</span>`;
+  if (diff <= 90) return `<span class="days-renewal dr-urgent">${diff} days</span>`;
+  if (diff <= 180) return `<span class="days-renewal dr-soon">${diff} days</span>`;
+  return `<span class="days-renewal dr-ok">${diff} days</span>`;
+}
+
+function arpuTag(arr, roles) {
+  if (!roles || !arr) return '';
+  const total = Object.values(roles).reduce((s,v) => s + v, 0);
+  if (total === 0) return '';
+  const arpu = Math.round(arr / total);
+  return `<span class="arpu-tag">${fmt$(arpu)}/user</span>`;
+}
+
+function npsClass(score) {
+  if (score === null || score === undefined) return '';
+  if (score >= 9) return 'nps-green has-score';
+  if (score >= 7) return 'nps-yellow has-score';
+  return 'nps-red has-score';
+}
+
+function repClass(rep) {
+  if (!rep) return '';
+  if (rep.includes('Jesse')) return 'jesse';
+  if (rep.includes('Myles')) return 'myles';
+  return '';
+}
+
+function renderStats() {
+  const current = customers.filter(c => c.category === 'Current');
+  const onboarding = customers.filter(c => c.category === 'Onboarding');
+  const pilot = customers.filter(c => c.category === 'Pilot');
+  const activeArr = current.reduce((s,c) => s + c.arr, 0);
+  const totalExpansion = current.reduce((s,c) => s + (c.ytdExpansion || 0), 0);
+  const onboardingArr = onboarding.reduce((s,c) => s + c.arr, 0);
+  const pilotArr = pilot.reduce((s,c) => s + (c.arr || 0), 0);
+  const totalArr = activeArr + onboardingArr + pilotArr;
+  const green = current.filter(c => c.status === 'Green').length;
+  const yellow = current.filter(c => c.status === 'Yellow').length;
+  const red = current.filter(c => c.status === 'Red').length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="v">${current.length}</div><div class="l">Current Customers</div></div>
+    <div class="stat"><div class="v">${fmt$(totalArr)}</div><div class="l">Total ARR</div></div>
+    <div class="stat"><div class="v">${fmt$(onboardingArr)}</div><div class="l">Onboarding ARR (${onboarding.length})</div></div>
+    <div class="stat"><div class="v">${pilot.length > 0 && pilot[0].potentialArr ? pilot[0].potentialArr : fmt$(pilotArr)}</div><div class="l">Piloting ARR (${pilot.length})</div></div>
+    <div class="stat"><div class="v" style="color:${totalExpansion >= 0 ? '#059669' : '#DC2626'}">${totalExpansion >= 0 ? '+' : '-'}${fmt$(Math.abs(totalExpansion))}</div><div class="l">YTD Expansion</div></div>
+    <div class="stat"><div class="v" style="color:#10B981">${green}</div><div class="l">Green</div></div>
+    <div class="stat"><div class="v" style="color:#F59E0B">${yellow}</div><div class="l">Yellow</div></div>
+    <div class="stat"><div class="v" style="color:#EF4444">${red}</div><div class="l">Red</div></div>
+  `;
+  document.getElementById('account-count').textContent = customers.length;
+}
+
+function parseRenewalDate(str) {
+  if (!str || str === '---') return null;
+  const parts = str.split('/');
+  if (parts.length !== 3) return null;
+  return new Date(parseInt(parts[2]), parseInt(parts[0]) - 1, parseInt(parts[1]));
+}
+
+function filterList() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const categoryF = document.getElementById('categoryFilter').value;
+  const statusF = document.getElementById('statusFilter').value;
+  const repF = document.getElementById('repFilter').value;
+  const renewalF = document.getElementById('renewalFilter').value;
+  const sortBy = document.getElementById('sortBy').value;
+  const now = new Date(); const thisYear = now.getFullYear(); const thisMonth = now.getMonth();
+
+  let list = customers.filter(c => {
+    if (search && !c.name.toLowerCase().includes(search) && !(c.contact||'').toLowerCase().includes(search)) return false;
+    if (categoryF !== 'all' && c.category !== categoryF) return false;
+    if (statusF !== 'all' && c.status !== statusF) return false;
+    if (repF !== 'all' && c.rep !== repF) return false;
+    if (renewalF !== 'all') {
+      const rd = parseRenewalDate(c.renewal);
+      if (!rd) return false;
+      if (renewalF === 'thisMonth') { if (rd.getFullYear() !== thisYear || rd.getMonth() !== thisMonth) return false; }
+      else if (renewalF === 'nextMonth') { const nm=new Date(thisYear,thisMonth+1,1); if (rd.getFullYear()!==nm.getFullYear()||rd.getMonth()!==nm.getMonth()) return false; }
+      else if (renewalF === 'quarter') { const qe=new Date(thisYear,thisMonth+3,now.getDate()); if (rd<now||rd>qe) return false; }
+      else if (renewalF === '6months') { const se=new Date(thisYear,thisMonth+6,now.getDate()); if (rd<now||rd>se) return false; }
+    }
+    return true;
+  });
+
+  if (sortBy === 'name') list.sort((a,b) => a.name.localeCompare(b.name));
+  else if (sortBy === 'status') list.sort((a,b) => ({Red:0,Yellow:1,Green:2})[a.status] - ({Red:0,Yellow:1,Green:2})[b.status]);
+  else if (sortBy === 'renewal') list.sort((a,b) => { const da=parseRenewalDate(a.renewal),db=parseRenewalDate(b.renewal); if(!da&&!db) return 0; if(!da) return 1; if(!db) return -1; return da-db; });
+  return list;
+}
+
+function renderSections() {
+  const list = filterList();
+  const currentItems = list.filter(c => c.category === 'Current');
+  const onboardingItems = list.filter(c => c.category === 'Onboarding');
+  const pilotItems = list.filter(c => c.category === 'Pilot');
+  const container = document.getElementById('sections-container');
+  let html = '';
+
+  if (currentItems.length > 0) {
+    html += `<div class="section-divider sd-current"><h2>Current Customers</h2><div class="section-sub">${currentItems.length} active accounts</div></div>`;
+    html += `<div class="grid">${currentItems.map(c => renderCurrentCard(c)).join('')}</div>`;
+  }
+  if (onboardingItems.length > 0) {
+    html += `<div class="section-divider sd-onboarding"><h2>Onboarding</h2><div class="section-sub">${onboardingItems.length} account${onboardingItems.length>1?'s':''} in onboarding</div></div>`;
+    html += `<div class="grid">${onboardingItems.map(c => renderOnboardingCard(c)).join('')}</div>`;
+  }
+  if (pilotItems.length > 0) {
+    html += `<div class="section-divider sd-pilot"><h2>Pilot</h2><div class="section-sub">${pilotItems.length} active pilot${pilotItems.length>1?'s':''}</div></div>`;
+    html += `<div class="grid">${pilotItems.map(c => renderPilotCard(c)).join('')}</div>`;
+  }
+  if (list.length === 0) html = '<div style="padding:60px 40px;text-align:center;color:#94A3B8;font-size:16px;">No customers match the current filters.</div>';
+  container.innerHTML = html;
+}
+
+function logoHtml(c) {
+  const d = customerLogos[c.name];
+  if (!d || !d.url) return '';
+  return `<div class="logo-wrap" style="border-color:${d.border};background:${d.bg||'#FFF'};"><img src="${d.url}" alt="${c.name}" class="customer-logo" onerror="this.parentElement.style.display='none'"></div>`;
+}
+
+function renderCurrentCard(c) {
+  const sc = c.status==='Green'?'status-green':c.status==='Yellow'?'status-yellow':'status-red';
+  const ac = c.status==='Green'?'accent-green':c.status==='Yellow'?'accent-yellow':'accent-red';
+  const uc = c.status==='Green'?'#10B981':c.status==='Yellow'?'#F59E0B':'#EF4444';
+  const reports = customerReports[c.name];
+  const rb = reports ? `<span class="reports-btn" onclick="openReportsModal('${c.name.replace(/'/g,"\\'")}')">Reports (${reports.length})</span>` : '';
+  const lh = c.pages.length>0 ? c.pages.map(p=>`<a href="${p.href}" class="${p.type}"${p.href.startsWith('http')?' target="_blank" rel="noopener"':''}>${p.label}</a>`).join('')+rb : (rb||'<span class="no-page">No scorecard yet</span>');
+  const npsDisplay = c.nps !== null && c.nps !== undefined ? `<span class="nps-badge ${npsClass(c.nps)}">NPS: ${c.nps}</span>` : `<span class="nps-badge">NPS: ---</span>`;
+  const repTag = c.rep ? `<span class="rep-tag ${repClass(c.rep)}">${c.rep}</span>` : '';
+  const referralsHtml = c.referrals ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
+
+  return `<div class="card">
+    <div class="accent ${ac}"></div>
+    ${logoHtml(c)}
+    <div class="rank">#${c.rank}</div>
+    <h2 style="text-decoration-color:${uc};">${c.name}</h2>
+    <div class="arr"><span style="font-size:14px;font-weight:700;color:#64748B;letter-spacing:0.5px;vertical-align:middle;">ARR </span>${fmt$(c.arr)}</div>
+    <div style="margin:-4px 0 8px;"><span class="renewal-tag">Renewal: ${c.renewal}</span> ${daysToRenewal(c.renewal)}</div>
+    <div class="ytd-expansion">YTD Expansion: <span class="${c.ytdExpansion>0?'ytd-pos':c.ytdExpansion<0?'ytd-neg':'ytd-zero'}">${c.ytdExpansion>=0?'+'+fmt$(c.ytdExpansion):'-'+fmt$(Math.abs(c.ytdExpansion))}</span></div>
+    <div class="meta">
+      <div class="meta-item"><span class="meta-label">Client Health:</span> <span class="${sc} status-badge">${c.status}</span>${npsDisplay}</div>
+      ${c.contact ? `<div class="meta-item"><span class="meta-label">Primary Contact:</span> <span class="contact-name">${c.contact}</span>${c.contactRole?' — '+c.contactRole:''}${repTag}</div>` : (repTag ? `<div class="meta-item"><span class="meta-label">Sales Rep:</span>${repTag}</div>` : '')}
+    </div>
+    <div style="display:flex;gap:20px;margin:10px 0;font-size:15px;font-weight:500;">
+      <span style="color:#475569;">CBRs YTD: <strong style="font-size:16px;color:${c.cbrsYTD>0?'#059669':'#94A3B8'};">${c.cbrsYTD}</strong></span>
+      <span style="color:#94A3B8;">|</span>
+      <span style="color:#475569;">Last Onsite: <strong style="font-size:16px;color:${c.lastOnsite!=='---'?'#2563EB':'#94A3B8'};">${c.lastOnsite}</strong></span>
+    </div>
+    ${roleBreakdownHtml(c.roles)}
+    <div class="framework">
+      <div class="fw-title">Client Growth Framework</div>
+      <div class="fw-row"><span class="fw-label">High & Wide:</span> ${c.highWide||'<span style="color:#CBD5E1;font-style:italic;">---</span>'}</div>
+      <div class="fw-row"><span class="fw-label">KPIs:</span> ${c.kpis||'<span style="color:#CBD5E1;font-style:italic;">---</span>'}</div>
+      <div class="fw-row"><span class="fw-label">Adoption:</span> ${c.adoption||'<span style="color:#CBD5E1;font-style:italic;">---</span>'}</div>
+      <div class="fw-row"><span class="fw-label">Utilization:</span> ${c.utilization||'<span style="color:#CBD5E1;font-style:italic;">---</span>'}</div>
+    </div>
+    ${c.blockers?`<div class="notes"><strong>Blockers:</strong> ${c.blockers}</div>`:''}
+    ${c.expansion?`<div class="notes"><strong>Expansion:</strong> ${c.expansion}</div>`:''}
+    ${referralsHtml}
+    <div class="links">${lh}</div>
+  </div>`;
+}
+
+function renderOnboardingCard(c) {
+  const ms=(c.milestones||[]).map(m=>`<div class="milestone-step ${m.status==='done'?'done':m.status==='active'?'active-step':''}"></div>`).join('');
+  const ml=(c.milestones||[]).map(m=>`<span class="ml-item ${m.status==='done'?'ml-done':m.status==='active'?'ml-active':'ml-pending'}">${m.label}</span>`).join('');
+  const lp=(c.locations||[]).map(l=>`<span class="location-pill">${l.name}${l.users?`<span class="lp-count">${l.users}</span>`:''}</span>`).join('');
+  const kc=(c.keyContacts||[]).map(k=>`<div class="fw-row"><span class="fw-label">${k.role}:</span> ${k.name}</div>`).join('');
+  const lh=c.pages.length>0?c.pages.map(p=>`<a href="${p.href}" class="${p.type}"${p.href.startsWith('http')?' target="_blank" rel="noopener"':''}>${p.label}</a>`).join(''):'<span class="no-page">Documents coming soon</span>';
+  const npsDisplay = c.nps !== null && c.nps !== undefined ? `<span class="nps-badge ${npsClass(c.nps)}">NPS: ${c.nps}</span>` : `<span class="nps-badge">NPS: ---</span>`;
+  const repTag = c.rep ? `<span class="rep-tag ${repClass(c.rep)}">${c.rep}</span>` : '';
+  const referralsHtml = c.referrals ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
+
+  return `<div class="card">
+    <div class="accent accent-blue"></div>
+    ${logoHtml(c)}
+    <div class="rank">#${c.rank}</div>
+    <span class="category-badge cat-onboarding">Onboarding</span>
+    <h2 style="text-decoration-color:#3B82F6;">${c.name}</h2>
+    <div class="arr"><span style="font-size:14px;font-weight:700;color:#64748B;letter-spacing:0.5px;vertical-align:middle;">ARR </span>${fmt$(c.arr)}</div>
+    ${c.website?`<div style="margin:4px 0 8px;"><a href="${c.website}" target="_blank" style="font-size:13px;color:#3B82F6;text-decoration:none;font-weight:600;">${c.website}</a></div>`:''}
+    <div class="meta">
+      <div class="meta-item"><span class="meta-label">Status:</span> <span class="status-green status-badge">Onboarding</span>${npsDisplay}</div>
+      ${c.contact?`<div class="meta-item"><span class="meta-label">Primary Contact:</span> <span class="contact-name">${c.contact}</span>${c.contactRole?' — '+c.contactRole:''}${repTag}</div>`:''}
+    </div>
+    ${lp?`<div style="margin-bottom:8px;"><div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#334155;margin-bottom:6px;">Locations (${c.locations.length})</div><div class="location-pills">${lp}</div></div>`:''}
+    ${roleBreakdownHtml(c.roles)}
+    <div class="milestone-tracker mt-onboarding">
+      <div class="mt-title">Onboarding Progress — ${c.onboardingPhase||''}</div>
+      <div class="milestone-bar">${ms}</div>
+      <div class="milestone-labels">${ml}</div>
+    </div>
+    ${kc?`<div class="framework"><div class="fw-title">Key Contacts</div>${kc}</div>`:''}
+    ${c.notes?`<div class="notes"><strong>Notes:</strong> ${c.notes}</div>`:''}
+    ${referralsHtml}
+    <div class="links">${lh}</div>
+  </div>`;
+}
+
+function renderPilotCard(c) {
+  const ms=(c.milestones||[]).map(m=>`<div class="milestone-step ${m.status==='done'?'done pilot':m.status==='active'?'active-step pilot':''}"></div>`).join('');
+  const ml=(c.milestones||[]).map(m=>`<span class="ml-item ${m.status==='done'?'ml-done pilot':m.status==='active'?'ml-active':'ml-pending'}">${m.label}</span>`).join('');
+  const lp=(c.locations||[]).map(l=>`<span class="location-pill pilot">${l.name}${l.users?`<span class="lp-count">${l.users}</span>`:''}</span>`).join('');
+  const kc=(c.keyContacts||[]).map(k=>`<div class="fw-row"><span class="fw-label">${k.role}:</span> ${k.name}</div>`).join('');
+  const lh=c.pages.length>0?c.pages.map(p=>`<a href="${p.href}" class="${p.type}"${p.href.startsWith('http')?' target="_blank" rel="noopener"':''}>${p.label}</a>`).join(''):'<span class="no-page">Documents coming soon</span>';
+  const npsDisplay = c.nps !== null && c.nps !== undefined ? `<span class="nps-badge ${npsClass(c.nps)}">NPS: ${c.nps}</span>` : `<span class="nps-badge">NPS: ---</span>`;
+  const repTag = c.rep ? `<span class="rep-tag ${repClass(c.rep)}">${c.rep}</span>` : '';
+  const referralsHtml = c.referrals ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
+
+  return `<div class="card">
+    <div class="accent accent-purple"></div>
+    ${logoHtml(c)}
+    <div class="rank">#${c.rank}</div>
+    <span class="category-badge cat-pilot">Pilot</span>
+    <h2 style="text-decoration-color:#8B5CF6;">${c.name}</h2>
+    <div class="arr"><span style="font-size:14px;font-weight:700;color:#64748B;letter-spacing:0.5px;vertical-align:middle;">Potential ARR </span><span style="color:#7C3AED;">${c.potentialArr||fmt$(c.arr)}</span></div>
+    ${c.website?`<div style="margin:4px 0 8px;"><a href="${c.website}" target="_blank" style="font-size:13px;color:#8B5CF6;text-decoration:none;font-weight:600;">${c.website}</a></div>`:''}
+    <div class="meta">
+      <div class="meta-item"><span class="meta-label">Status:</span> <span class="status-badge" style="background:rgba(139,92,246,0.1);color:#7C3AED;">Pilot</span>${npsDisplay}</div>
+      ${c.contact?`<div class="meta-item"><span class="meta-label">Primary Contact:</span> <span class="contact-name">${c.contact}</span>${c.contactRole?' — '+c.contactRole:''}${repTag}</div>`:''}
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;font-size:14px;font-weight:600;">
+      <span style="padding:4px 14px;border-radius:8px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);color:#7C3AED;">Pilot Users: ${c.totalUsers||'---'}</span>
+      ${c.pilotLaunch?`<span style="padding:4px 14px;border-radius:8px;background:#F0FDF4;border:1px solid #BBF7D0;color:#059669;">Launched: ${c.pilotLaunch}</span>`:''}
+      ${c.pilotGoNoGo?`<span style="padding:4px 14px;border-radius:8px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);color:#D97706;">Go/No-Go: ${c.pilotGoNoGo}</span>`:''}
+    </div>
+    ${lp?`<div style="margin:8px 0;"><div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#334155;margin-bottom:6px;">Pilot Locations (${c.locations.length})</div><div class="location-pills">${lp}</div></div>`:''}
+    ${roleBreakdownHtml(c.roles)}
+    <div class="milestone-tracker mt-pilot">
+      <div class="mt-title">Pilot Progress — ${c.pilotPhase||''}</div>
+      <div class="milestone-bar">${ms}</div>
+      <div class="milestone-labels">${ml}</div>
+    </div>
+    ${kc?`<div class="framework"><div class="fw-title">Key Contacts</div>${kc}</div>`:''}
+    ${c.notes?`<div class="notes"><strong>Notes:</strong> ${c.notes}</div>`:''}
+    ${referralsHtml}
+    <div class="links">${lh}</div>
+  </div>`;
+}
+
+['search','categoryFilter','statusFilter','repFilter','renewalFilter','sortBy'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName==='INPUT'?'input':'change', renderSections);
+});
+renderStats();
+renderSections();
+
+// Modal functionality
+const modalOverlay = document.createElement('div');
+modalOverlay.className = 'modal-overlay';
+modalOverlay.id = 'doc-modal';
+document.body.appendChild(modalOverlay);
+
+function getFileIcon(h){if(h.endsWith('.docx'))return'📄';if(h.endsWith('.pptx'))return'📊';if(h.endsWith('.xlsx'))return'📗';return'📄';}
+function getFileType(h){if(h.endsWith('.docx'))return'Word Document';if(h.endsWith('.pptx'))return'PowerPoint Presentation';if(h.endsWith('.xlsx'))return'Excel Spreadsheet';return'Document';}
+
+function openDocModal(href,label){
+  modalOverlay.innerHTML=`<div class="modal-panel"><div class="file-icon">${getFileIcon(href)}</div><h3>${href.split('/').pop()}</h3><div class="file-type">${getFileType(href)}</div><p style="color:#64748B;font-size:13px;margin-bottom:16px">This document cannot be previewed in-browser. Click below to open it.</p><div class="modal-actions"><button class="btn-modal primary" onclick="window.open('${href}','_blank')">Open Document</button><button class="btn-modal" onclick="closeDocModal()">Close</button></div></div>`;
+  modalOverlay.classList.add('active');
+}
+function closeDocModal(){modalOverlay.classList.remove('active');}
+modalOverlay.addEventListener('click',e=>{if(e.target===modalOverlay)closeDocModal();});
+
+document.addEventListener('click',e=>{
+  if(e.target.tagName==='A'){const h=e.target.getAttribute('href');if(h&&(h.endsWith('.docx')||h.endsWith('.pptx')||h.endsWith('.xlsx'))){e.preventDefault();openDocModal(h,e.target.textContent);}}
+},true);
+
+function openReportsModal(customerName){
+  const reports=customerReports[customerName];if(!reports)return;
+  function ri(f){if(f.endsWith('.pdf')||f.includes('drive.google.com'))return'📕';if(f.endsWith('.pptx')||f.includes('docs.google.com/presentation'))return'📊';if(f.endsWith('.xlsx')||f.includes('docs.google.com/spreadsheets'))return'📗';return'📁';}
+  function rt(f){if(f.endsWith('.pdf')||f.includes('drive.google.com'))return'PDF';if(f.endsWith('.pptx')||f.includes('docs.google.com/presentation'))return'PPTX';if(f.endsWith('.xlsx')||f.includes('docs.google.com/spreadsheets'))return'XLSX';return'File';}
+  const items=reports.map((r,i)=>`<li onclick="toggleReportCheck(${i})" id="report-item-${i}"><input type="checkbox" id="report-cb-${i}" onclick="event.stopPropagation();toggleReportCheck(${i})"><span style="font-size:20px;">${ri(r.file)}</span><span class="report-name">${r.name}</span><span class="report-type">${rt(r.file)}</span></li>`).join('');
+  modalOverlay.innerHTML=`<div class="modal-panel" style="max-width:600px;"><h3 style="margin-bottom:4px;">${customerName} — Reports</h3><div style="font-size:13px;color:#64748B;margin-bottom:12px;">${reports.length} report${reports.length!==1?'s':''} available</div><ul class="report-list">${items}</ul><div style="display:flex;gap:8px;justify-content:space-between;align-items:center;"><span style="font-size:13px;color:#94A3B8;" id="reports-selected-count">0 selected</span><div style="display:flex;gap:10px;"><button class="btn-modal" onclick="selectAllReports(${reports.length})">Select All</button><button class="btn-modal primary" onclick="openSelectedReports('${customerName.replace(/'/g,"\\'")}')">Open Selected</button><button class="btn-modal" onclick="closeDocModal()">Close</button></div></div></div>`;
+  modalOverlay.classList.add('active');
+}
+function toggleReportCheck(i){const cb=document.getElementById('report-cb-'+i);const li=document.getElementById('report-item-'+i);cb.checked=!cb.checked;li.classList.toggle('selected',cb.checked);updateSelectedCount();}
+function selectAllReports(n){for(let i=0;i<n;i++){document.getElementById('report-cb-'+i).checked=true;document.getElementById('report-item-'+i).classList.add('selected');}updateSelectedCount();}
+function updateSelectedCount(){const n=document.querySelectorAll('.report-list input[type="checkbox"]:checked').length;const el=document.getElementById('reports-selected-count');if(el)el.textContent=n+' selected';}
+function openSelectedReports(name){const reps=customerReports[name];if(!reps)return;const sel=[];reps.forEach((r,i)=>{if(document.getElementById('report-cb-'+i)?.checked)sel.push(r.file);});if(!sel.length){alert('Please select at least one report.');return;}sel.forEach(f=>window.open(f,'_blank'));closeDocModal();}
+</script>
+</body>
+</html>

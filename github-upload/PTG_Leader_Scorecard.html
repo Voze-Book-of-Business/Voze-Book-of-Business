@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premier Truck Group — Leader Engagement Scorecard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0F172A;color:#F1F5F9;min-height:100vh}
+.header{background:linear-gradient(135deg,#1E293B 0%,#0F172A 100%);border-bottom:2px solid #F59E0B;padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.header h1{font-size:22px;font-weight:800;letter-spacing:1px}
+.header .sub{color:#94A3B8;font-size:13px;margin-top:4px}
+.header .gold{color:#F59E0B}
+.stats-row{display:flex;gap:16px;flex-wrap:wrap;padding:20px 32px}
+.stat-card{background:#1E293B;border:1px solid #334155;border-radius:10px;padding:16px 24px;min-width:160px;flex:1}
+.stat-card .val{font-size:28px;font-weight:800;color:#F59E0B}
+.stat-card .lbl{font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.filters{padding:12px 32px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.filters label{color:#94A3B8;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
+.filters select,.filters input{background:#1E293B;border:1px solid #334155;color:#F1F5F9;padding:6px 12px;border-radius:6px;font-size:13px}
+.filters input[type="text"]{width:220px}
+.legend{padding:8px 32px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#94A3B8}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot-champ{background:#10B981}
+.dot-neut{background:#F59E0B}
+.dot-detr{background:#EF4444}
+.dot-none{background:#475569}
+
+table{width:100%;border-collapse:collapse;margin:0 0 40px}
+thead th{background:#1E293B;color:#94A3B8;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;padding:12px 14px;text-align:left;border-bottom:2px solid #334155;position:sticky;top:0;z-index:10;cursor:pointer;user-select:none}
+thead th:hover{color:#F59E0B}
+thead th.sorted-asc::after{content:" ▲";color:#F59E0B}
+thead th.sorted-desc::after{content:" ▼";color:#F59E0B}
+tbody tr{border-bottom:1px solid #1E293B;transition:background 0.15s}
+tbody tr:hover{background:#1E293B}
+tbody tr.champion-row{border-left:3px solid #10B981}
+tbody tr.detractor-row{border-left:3px solid #EF4444}
+tbody tr.neutral-row{border-left:3px solid #F59E0B}
+td{padding:10px 14px;font-size:13px;vertical-align:middle}
+td.name-cell{font-weight:600;white-space:nowrap}
+td.title-cell{color:#94A3B8;font-size:12px;max-width:200px}
+td.region-cell{font-size:11px}
+.region-east{color:#06B6D4}
+.region-west{color:#10B981}
+.region-north{color:#3B82F6}
+.region-corp{color:#F59E0B}
+
+.score-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;min-width:32px;text-align:center}
+.score-high{background:rgba(16,185,129,0.2);color:#10B981}
+.score-med{background:rgba(245,158,11,0.2);color:#F59E0B}
+.score-low{background:rgba(239,68,68,0.15);color:#EF4444}
+.score-zero{background:rgba(71,85,105,0.3);color:#64748B}
+
+.voze-bar{display:flex;align-items:center;gap:8px}
+.voze-bar .bar{height:6px;border-radius:3px;background:#3B82F6;min-width:0;transition:width 0.3s}
+.voze-bar .cnt{font-size:12px;color:#94A3B8;min-width:24px}
+
+/* Champion/Detractor/Neutral toggle */
+.stance-toggle{display:flex;gap:2px}
+.stance-toggle label{cursor:pointer;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid transparent;transition:all 0.15s;text-align:center}
+.stance-toggle input{display:none}
+.stance-toggle .champ-opt{color:#64748B}
+.stance-toggle .champ-opt:hover{color:#10B981;border-color:#10B981}
+.stance-toggle input:checked + .champ-opt{background:rgba(16,185,129,0.2);color:#10B981;border-color:#10B981}
+.stance-toggle .neut-opt{color:#64748B}
+.stance-toggle .neut-opt:hover{color:#F59E0B;border-color:#F59E0B}
+.stance-toggle input:checked + .neut-opt{background:rgba(245,158,11,0.2);color:#F59E0B;border-color:#F59E0B}
+.stance-toggle .detr-opt{color:#64748B}
+.stance-toggle .detr-opt:hover{color:#EF4444;border-color:#EF4444}
+.stance-toggle input:checked + .detr-opt{background:rgba(239,68,68,0.15);color:#EF4444;border-color:#EF4444}
+
+.email-notes{width:100%;background:transparent;border:1px solid #334155;border-radius:4px;color:#F1F5F9;padding:4px 8px;font-size:12px;resize:none;font-family:inherit;min-height:28px}
+.email-notes:focus{outline:none;border-color:#3B82F6}
+.survey-cell{min-width:180px}
+.survey-q{width:100%;background:transparent;border:1px solid #334155;border-radius:4px;color:#F1F5F9;padding:4px 8px;font-size:11px;resize:none;font-family:inherit;min-height:26px;line-height:1.4}
+.survey-q:focus{outline:none;border-color:#F59E0B}
+.survey-q::placeholder{color:#475569;font-style:italic}
+.survey-label{font-size:9px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;display:block}
+
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#1E293B;border-top:1px solid #334155;padding:12px 32px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.save-bar button{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
+.btn-save{background:#F59E0B;color:#0F172A}
+.btn-save:hover{background:#D97706}
+.btn-export{background:#334155;color:#F1F5F9}
+.btn-export:hover{background:#475569}
+.save-msg{color:#10B981;font-size:12px;display:none}
+.table-wrap{padding:0 32px 80px;overflow-x:auto}
+
+@media print{
+  body{background:#fff;color:#000}
+  .save-bar,.filters{display:none}
+  thead th{background:#f0f0f0;color:#333}
+  tbody tr{border-bottom:1px solid #ddd}
+  td{color:#000}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>PREMIER TRUCK GROUP <span class="gold">— Leader Engagement Scorecard</span></h1>
+    <div class="sub">Voze Comment Activity · Mar 16 – Apr 19, 2026 · Prepared for Andy Olsen</div>
+  </div>
+</div>
+
+<div class="stats-row" id="statsRow">
+  <div class="stat-card"><div class="val" id="totalLeaders">0</div><div class="lbl">Leaders Tracked</div></div>
+  <div class="stat-card"><div class="val" id="totalComments">314</div><div class="lbl">Total Comments (4wk)</div></div>
+  <div class="stat-card"><div class="val" id="activeLeaders">0</div><div class="lbl">Active in Voze</div></div>
+  <div class="stat-card"><div class="val" id="champCount">0</div><div class="lbl">Champions</div></div>
+  <div class="stat-card"><div class="val" id="detrCount">0</div><div class="lbl">Detractors</div></div>
+</div>
+
+<div class="filters">
+  <label>Search:</label>
+  <input type="text" id="searchBox" placeholder="Filter by name, title, region...">
+  <label>Region:</label>
+  <select id="regionFilter">
+    <option value="all">All Regions</option>
+    <option value="Corporate">Corporate</option>
+    <option value="East">East</option>
+    <option value="West">West</option>
+    <option value="North">North</option>
+  </select>
+  <label>Stance:</label>
+  <select id="stanceFilter">
+    <option value="all">All</option>
+    <option value="champion">Champions</option>
+    <option value="neutral">Neutral</option>
+    <option value="detractor">Detractors</option>
+    <option value="none">Unset</option>
+  </select>
+  <label>Voze Active:</label>
+  <select id="activeFilter">
+    <option value="all">All</option>
+    <option value="yes">Active (>0 comments)</option>
+    <option value="no">Inactive</option>
+  </select>
+</div>
+
+<div class="legend">
+  <span><span class="dot dot-champ"></span> Champion</span>
+  <span><span class="dot dot-neut"></span> Neutral</span>
+  <span><span class="dot dot-detr"></span> Detractor</span>
+  <span><span class="dot dot-none"></span> Unset</span>
+  <span style="margin-left:auto;color:#64748B">Click column headers to sort · Data auto-saves to browser</span>
+</div>
+
+<div class="table-wrap">
+<table id="scoreTable">
+<thead>
+<tr>
+  <th data-col="name">Name</th>
+  <th data-col="title">Title</th>
+  <th data-col="region">Region</th>
+  <th data-col="location">Location</th>
+  <th data-col="comments" style="text-align:center">Voze Comments (4wk)</th>
+  <th data-col="score" style="text-align:center">Engagement Score</th>
+  <th data-col="stance" style="text-align:center">Champion / Neutral / Detractor</th>
+  <th data-col="training" style="text-align:center">Last Training</th>
+  <th data-col="email" style="min-width:200px">Email / Interaction Notes</th>
+  <th data-col="q1" class="survey-cell">❤️ Favorite Thing</th>
+  <th data-col="q2" class="survey-cell">💰 Most Value</th>
+  <th data-col="q3" class="survey-cell">🔧 Would Change</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<div class="save-bar">
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="btn-save" onclick="saveData()">💾 Save Progress</button>
+    <span class="save-msg" id="saveMsg">✓ Saved</span>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-export" onclick="exportCSV()">📋 Export CSV</button>
+  </div>
+</div>
+
+<script>
+// ===== LEADER DATA =====
+const leaders = [
+  // Executive Leadership
+  {name:"Ron Long", title:"President & CEO", region:"Corporate", location:"Corporate", comments:0, email:""},
+  {name:"Matt Tripp", title:"EVP of Fixed Operations", region:"Corporate", location:"Corporate", comments:0, email:"mtripp@premiertruck.com"},
+  {name:"Brian Vostrez", title:"EVP of Sales", region:"Corporate", location:"Corporate", comments:0, email:""},
+  {name:"Ryan Hadley", title:"EVP — North Region", region:"Corporate", location:"Corporate / Canada", comments:0, email:""},
+  {name:"Mark Lamont", title:"Executive Vice President", region:"Corporate", location:"Corporate", comments:0, email:""},
+  {name:"Dave Wirth", title:"Vice President", region:"Corporate", location:"Corporate", comments:0, email:""},
+
+  // Directors
+  {name:"Rob Hollmann", title:"Dir. of Aftermarket Sales", region:"Corporate", location:"Corporate", comments:0, email:""},
+  {name:"Darren Hunt", title:"East Region Parts Director", region:"East", location:"Regional", comments:0, email:"darhunt@premiertruck.com"},
+  {name:"Matthew Workman", title:"West Region Parts Director", region:"West", location:"Regional", comments:0, email:"mworkman@premiertruck.com"},
+  {name:"Rob Greene", title:"North Region Parts Director", region:"North", location:"Regional", comments:0, email:"RGreene@premiertruck.com"},
+  {name:"Steve Rowland", title:"Corporate Inventory Controls", region:"Corporate", location:"Corporate", comments:0, email:"srowland@premiertruck.com"},
+  {name:"Nate Chick", title:"Dir. Remanufacturing — East", region:"East", location:"Regional", comments:0, email:""},
+  {name:"Shane Remp", title:"East Dir. Financial Services", region:"East", location:"Regional", comments:0, email:""},
+  {name:"Jill Gingrich", title:"Exec Customer Acct Director", region:"Corporate", location:"Corporate", comments:0, email:""},
+
+  // General Managers
+  {name:"Scott Blair", title:"General Manager", region:"East", location:"South Dallas, TX", comments:0, email:""},
+  {name:"Drew Burk", title:"General Manager", region:"East", location:"North Dallas, TX", comments:0, email:""},
+  {name:"Robert Smith", title:"General Manager", region:"East", location:"Oklahoma City, OK", comments:0, email:""},
+  {name:"EJ Workman", title:"General Manager", region:"East", location:"Knoxville, TN", comments:0, email:""},
+  {name:"Darel Dyer", title:"General Manager", region:"East", location:"Chattanooga, TN", comments:0, email:""},
+  {name:"Duane Snelling", title:"General Manager", region:"East", location:"Kansas City, MO", comments:0, email:""},
+  {name:"Patrick Johnson", title:"General Manager", region:"East", location:"Columbia, MO", comments:0, email:""},
+  {name:"Travis Tinkler", title:"General Manager", region:"East", location:"Joplin, MO", comments:0, email:""},
+  {name:"Challis Anderson", title:"General Manager", region:"West", location:"Tremonton, UT", comments:0, email:""},
+  {name:"Jason Doxsee", title:"General Manager", region:"North", location:"Oshawa, ON", comments:0, email:""},
+  {name:"Angela Ward", title:"General Manager", region:"North", location:"Cambridge, ON", comments:0, email:""},
+  {name:"Shaun McKerlie", title:"General Manager", region:"North", location:"London, ON", comments:0, email:""},
+
+  // Parts Managers (with Voze comment data where available)
+  {name:"Anthony Shimkus", title:"Parts Manager", region:"East", location:"South Dallas, TX", comments:0, email:"ashimkus@premiertruck.com"},
+  {name:"Rick Benavides", title:"Parts Manager", region:"East", location:"North Dallas, TX", comments:0, email:"Rbenavides@premiertruck.com"},
+  {name:"Sam Camacho", title:"Parts Manager", region:"East", location:"Ft Worth, TX", comments:0, email:"scamacho@premiertruck.com"},
+  {name:"Brent Fryer", title:"Parts Manager", region:"East", location:"Oklahoma City, OK", comments:0, email:"bfryer@premiertruck.com"},
+  {name:"Chris Walker", title:"Parts Manager", region:"East", location:"Tulsa, OK", comments:0, email:"chris.walker@premiertruck.com"},
+  {name:"Mike Harris", title:"Parts Manager", region:"East", location:"Knoxville, TN", comments:0, email:"mharris@premiertruck.com"},
+  {name:"Mike Miller", title:"Parts Manager", region:"East", location:"Chattanooga / Ringgold", comments:0, email:"michael.miller@premiertruck.com"},
+  {name:"Blake Darby", title:"Parts Manager", region:"East", location:"Kansas City, MO", comments:0, email:""},
+  {name:"Andy Martin", title:"Parts Manager", region:"East", location:"Columbia, MO", comments:7, email:""},
+  {name:"Eric Shotwell", title:"Parts Manager", region:"East", location:"Springfield, MO", comments:3, email:""},
+  {name:"Jen Gould", title:"Parts Manager", region:"East", location:"LaCrosse, WI", comments:0, email:""},
+  {name:"Jeremy Bremness", title:"Parts Manager", region:"East", location:"Eau Claire, WI", comments:0, email:""},
+  {name:"Cody Hakes", title:"Parts Manager", region:"East", location:"Roberts, WI", comments:0, email:""},
+  {name:"Tom Partner", title:"Parts Manager", region:"West", location:"Salt Lake City, UT", comments:0, email:""},
+  {name:"Bogdan Tokar", title:"Parts Manager", region:"West", location:"Portland, OR", comments:0, email:""},
+  {name:"Todd Moosman", title:"Parts Manager", region:"West", location:"Salina, UT", comments:0, email:""},
+  {name:"Dave Andersen", title:"Parts Manager", region:"West", location:"St. George, UT", comments:0, email:""},
+  {name:"Kambria Gaedcke", title:"Parts Manager", region:"West", location:"Tremonton, UT", comments:0, email:""},
+  {name:"Kyle Harris", title:"Parts Manager", region:"West", location:"Twin Falls, ID", comments:0, email:""},
+  {name:"Luis Palacios", title:"Parts Manager", region:"West", location:"Idaho Falls, ID", comments:0, email:""},
+  {name:"Mark Nelson", title:"Parts Manager", region:"West", location:"Salem, OR", comments:0, email:""},
+  {name:"Trey Adams", title:"Parts Manager", region:"West", location:"Odessa, TX", comments:0, email:""},
+  {name:"Deanna Lafranca", title:"Parts Manager", region:"West", location:"Midland, TX", comments:0, email:""},
+  {name:"Rob Elmore", title:"Parts Manager", region:"West", location:"Amarillo, TX", comments:0, email:""},
+  {name:"Sean Vice", title:"Parts Manager", region:"North", location:"Oshawa, ON", comments:0, email:"svice@premiertruck.com"},
+  {name:"Robert White", title:"Parts Manager", region:"North", location:"Mississauga, ON", comments:0, email:"rwhite@premiertruck.com"},
+  {name:"Chrsi Kijak", title:"Parts Manager", region:"North", location:"St. Catharines, ON", comments:0, email:"ckijak@premiertruck.com"},
+  {name:"Jamie Amodeo", title:"Parts Manager", region:"North", location:"Belleville, ON", comments:3, email:"jamodeo@premiertruck.com"},
+  {name:"Scott Sivyer", title:"Parts Manager", region:"North", location:"Hamilton, ON", comments:0, email:"ssivyer@premiertruck.com"},
+  {name:"Lisa Clements", title:"Parts Manager", region:"North", location:"Cambridge, ON", comments:0, email:"lclements@premiertruck.com"},
+  {name:"Linda Mccutcheon", title:"Parts Manager", region:"North", location:"London, ON", comments:0, email:"lmccutcheon@premiertruck.com"},
+  {name:"Alex Jones", title:"Parts Manager", region:"North", location:"Sarnia, ON", comments:0, email:"alex.jones@premiertruck.com"},
+  {name:"Rich Hrdlicka", title:"Parts Manager", region:"North", location:"Windsor, ON", comments:0, email:"rhrdlicka@premiertruck.com"},
+  {name:"Samantha Stefaniuck", title:"Parts Manager", region:"North", location:"Winnipeg, MB", comments:0, email:""},
+  {name:"Andrew Modler", title:"Parts Manager", region:"North", location:"Steinbach, MB", comments:0, email:""},
+  {name:"Dwayne Stone", title:"Parts Manager", region:"North", location:"Brandon, MB", comments:0, email:""},
+
+  // ASMs / Field with Voze data
+  {name:"Jeff Gilmer", title:"Aftermarket Sales Mgr (All ON)", region:"North", location:"Ontario-wide", comments:9, email:"jgilmer@premiertruck.com"},
+  {name:"Jesse Gerich", title:"Aftermarket Sales Mgr", region:"East", location:"South Dallas, TX", comments:0, email:"Jgerich@premiertruck.com"},
+  {name:"Ricky Vega", title:"Aftermarket Sales Mgr", region:"East", location:"North Dallas, TX", comments:0, email:"rvega@premiertruck.com"},
+  {name:"Bob Sasser", title:"Aftermarket Sales Mgr", region:"East", location:"Ft Worth, TX", comments:0, email:"bsasser@premiertruck.com"},
+  {name:"Jon Scott", title:"Aftermarket Sales Mgr", region:"East", location:"Oklahoma City, OK", comments:0, email:"jdscott@premiertruck.com"},
+  {name:"Jeremy Farmer", title:"Aftermarket Sales Mgr", region:"East", location:"Tulsa, OK", comments:0, email:"jfarmer@premiertruck.com"},
+  {name:"Kelly Lewis", title:"Aftermarket Sales Mgr", region:"East", location:"Chattanooga, TN", comments:2, email:"kelly.lewis@premiertruck.com"},
+  {name:"Dustin McDaniel", title:"Aftermarket Sales Mgr", region:"East", location:"Kansas City, MO", comments:0, email:""},
+  {name:"Jenny Campbell", title:"Aftermarket Sales Mgr", region:"East", location:"Springfield, MO", comments:9, email:""},
+  {name:"Jeremy Dean", title:"Aftermarket Sales Mgr", region:"East", location:"Shared / East", comments:34, email:""},
+  {name:"Chris Fjeldsted", title:"Aftermarket Sales Mgr", region:"West", location:"Salt Lake City, UT", comments:4, email:""},
+  {name:"Denis Gavrilovich", title:"Aftermarket Sales Mgr", region:"West", location:"Portland, OR", comments:0, email:""},
+  {name:"Brian Hargis", title:"Aftermarket Sales Mgr", region:"West", location:"Odessa, TX", comments:0, email:""},
+  {name:"Aaron Ruiz", title:"Aftermarket Sales Mgr", region:"West", location:"Amarillo, TX", comments:0, email:""},
+  {name:"Jaret Besler", title:"Aftermarket Sales Mgr (shared)", region:"North", location:"Manitoba", comments:0, email:""},
+
+  // Inside Reps (from Voze comment data — active commenters)
+  {name:"Kyle Pederson", title:"Inside Rep", region:"Corporate", location:"Inside / Admin", comments:99, email:""},
+  {name:"Reed Quinn", title:"Inside Rep", region:"Corporate", location:"Inside / Admin", comments:19, email:""},
+  {name:"Dakota Anderson", title:"Inside Rep", region:"Corporate", location:"Inside / Admin", comments:18, email:""},
+  {name:"Elizabeth Brown", title:"Inside Rep / Outside", region:"Corporate", location:"Outside - All Accts", comments:12, email:""},
+  {name:"Nick Briscoe", title:"Inside Rep", region:"Corporate", location:"Inside / Admin", comments:8, email:""},
+  {name:"Simon Balleux", title:"Inside Rep", region:"Corporate", location:"Inside", comments:8, email:""},
+  {name:"Kurt Barrett", title:"Inside Rep", region:"Corporate", location:"Inside", comments:7, email:""},
+  {name:"Cameron Martin", title:"Inside Rep", region:"Corporate", location:"Inside", comments:5, email:""},
+  {name:"Dominic Mascotti", title:"Inside Rep", region:"Corporate", location:"Inside", comments:5, email:""},
+  {name:"Tony Barker", title:"Inside Rep", region:"Corporate", location:"Inside", comments:5, email:""},
+  {name:"Melinda Martin", title:"Inside Rep", region:"Corporate", location:"Inside", comments:5, email:""},
+  {name:"Bradley Tucker", title:"Inside Rep", region:"Corporate", location:"Inside", comments:4, email:""},
+  {name:"Glen Lee", title:"Outside Rep", region:"Corporate", location:"Outside - All Accts", comments:4, email:""},
+  {name:"Charles Quintana", title:"Outside Rep", region:"Corporate", location:"Outside - All Accts", comments:4, email:""},
+];
+
+// Location training dates from calendar
+const locationTraining = {
+  "South Dallas, TX": "10/13/2025",
+  "North Dallas, TX": "12/12/2025",
+  "Ft Worth, TX": "10/13/2025",
+  "Oklahoma City, OK": "10/09/2025",
+  "Tulsa, OK": "10/09/2025",
+  "Knoxville, TN": "10/08/2025",
+  "Chattanooga, TN": "10/08/2025",
+  "Chattanooga / Ringgold": "10/08/2025",
+  "Kansas City, MO": "10/16/2025",
+  "Columbia, MO": "10/16/2025",
+  "Springfield, MO": "10/16/2025",
+  "Joplin, MO": "10/16/2025",
+  "Salt Lake City, UT": "10/06/2025",
+  "Salina, UT": "10/06/2025",
+  "St. George, UT": "10/06/2025",
+  "Tremonton, UT": "10/06/2025",
+  "Portland, OR": "11/20/2025",
+  "Salem, OR": "11/20/2025",
+  "Twin Falls, ID": "10/06/2025",
+  "Idaho Falls, ID": "10/06/2025",
+  "Odessa, TX": "",
+  "Midland, TX": "",
+  "Amarillo, TX": "",
+  "LaCrosse, WI": "",
+  "Eau Claire, WI": "",
+  "Roberts, WI": "",
+  "Corporate": "",
+  "Corporate / Canada": "",
+  "Regional": "",
+  "Inside / Admin": "",
+  "Inside": "",
+  "Inside / Admin": "",
+  "Outside - All Accts": "",
+  "Shared / East": "",
+  "Ontario-wide": "",
+  "Manitoba": "",
+  "Oshawa, ON": "",
+  "Cambridge, ON": "",
+  "London, ON": "",
+  "Mississauga, ON": "",
+  "St. Catharines, ON": "",
+  "Belleville, ON": "",
+  "Hamilton, ON": "",
+  "Sarnia, ON": "",
+  "Windsor, ON": "",
+  "Winnipeg, MB": "",
+  "Steinbach, MB": "",
+  "Brandon, MB": "",
+};
+
+// State
+let stanceData = {};
+let noteData = {};
+let surveyData = {}; // {name: {q1:"", q2:"", q3:""}}
+let sortCol = 'comments';
+let sortDir = 'desc';
+
+// Load saved data
+function loadSaved() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('ptg_scorecard') || '{}');
+    stanceData = saved.stances || {};
+    noteData = saved.notes || {};
+    surveyData = saved.survey || {};
+  } catch(e) {}
+}
+
+// Compute engagement score (0-100)
+function engagementScore(leader) {
+  let score = 0;
+  // Comments weighted heavily
+  if (leader.comments >= 20) score += 40;
+  else if (leader.comments >= 10) score += 30;
+  else if (leader.comments >= 5) score += 20;
+  else if (leader.comments >= 1) score += 10;
+
+  // Stance bonus
+  const stance = stanceData[leader.name] || '';
+  if (stance === 'champion') score += 40;
+  else if (stance === 'neutral') score += 20;
+  else if (stance === 'detractor') score -= 10;
+
+  // Has email/notes
+  const note = noteData[leader.name] || '';
+  if (note.length > 5) score += 20;
+
+  return Math.max(0, Math.min(100, score));
+}
+
+function scoreBadge(score) {
+  if (score >= 60) return `<span class="score-badge score-high">${score}</span>`;
+  if (score >= 30) return `<span class="score-badge score-med">${score}</span>`;
+  if (score > 0) return `<span class="score-badge score-low">${score}</span>`;
+  return `<span class="score-badge score-zero">0</span>`;
+}
+
+function regionClass(r) {
+  if (r === 'East') return 'region-east';
+  if (r === 'West') return 'region-west';
+  if (r === 'North') return 'region-north';
+  return 'region-corp';
+}
+
+function maxComments() {
+  return Math.max(...leaders.map(l => l.comments), 1);
+}
+
+function renderTable() {
+  const search = document.getElementById('searchBox').value.toLowerCase();
+  const regionF = document.getElementById('regionFilter').value;
+  const stanceF = document.getElementById('stanceFilter').value;
+  const activeF = document.getElementById('activeFilter').value;
+  const mc = maxComments();
+
+  let filtered = leaders.filter(l => {
+    if (search && !(l.name+l.title+l.region+l.location).toLowerCase().includes(search)) return false;
+    if (regionF !== 'all' && l.region !== regionF) return false;
+    const stance = stanceData[l.name] || 'none';
+    if (stanceF !== 'all' && stance !== stanceF) return false;
+    if (activeF === 'yes' && l.comments === 0) return false;
+    if (activeF === 'no' && l.comments > 0) return false;
+    return true;
+  });
+
+  // Sort
+  filtered.sort((a, b) => {
+    let va, vb;
+    if (sortCol === 'name') { va = a.name; vb = b.name; }
+    else if (sortCol === 'title') { va = a.title; vb = b.title; }
+    else if (sortCol === 'region') { va = a.region; vb = b.region; }
+    else if (sortCol === 'location') { va = a.location; vb = b.location; }
+    else if (sortCol === 'comments') { va = a.comments; vb = b.comments; }
+    else if (sortCol === 'score') { va = engagementScore(a); vb = engagementScore(b); }
+    else if (sortCol === 'stance') { va = stanceData[a.name]||'z'; vb = stanceData[b.name]||'z'; }
+    else { va = a.name; vb = b.name; }
+
+    if (typeof va === 'string') {
+      return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    }
+    return sortDir === 'asc' ? va - vb : vb - va;
+  });
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = filtered.map(l => {
+    const stance = stanceData[l.name] || '';
+    const note = noteData[l.name] || '';
+    const score = engagementScore(l);
+    const barW = Math.round((l.comments / mc) * 120);
+    const rowClass = stance === 'champion' ? 'champion-row' : stance === 'detractor' ? 'detractor-row' : stance === 'neutral' ? 'neutral-row' : '';
+    const uid = l.name.replace(/[^a-zA-Z]/g, '');
+
+    return `<tr class="${rowClass}">
+      <td class="name-cell">${l.name}</td>
+      <td class="title-cell">${l.title}</td>
+      <td class="region-cell ${regionClass(l.region)}">${l.region}</td>
+      <td style="font-size:12px;color:#94A3B8">${l.location}</td>
+      <td style="text-align:center">
+        <div class="voze-bar" style="justify-content:center">
+          <div class="bar" style="width:${barW}px"></div>
+          <span class="cnt">${l.comments}</span>
+        </div>
+      </td>
+      <td style="text-align:center">${scoreBadge(score)}</td>
+      <td style="text-align:center">
+        <div class="stance-toggle">
+          <input type="radio" name="stance_${uid}" id="ch_${uid}" value="champion" ${stance==='champion'?'checked':''} onchange="setStance('${l.name}','champion')">
+          <label for="ch_${uid}" class="champ-opt">Champion</label>
+          <input type="radio" name="stance_${uid}" id="ne_${uid}" value="neutral" ${stance==='neutral'?'checked':''} onchange="setStance('${l.name}','neutral')">
+          <label for="ne_${uid}" class="neut-opt">Neutral</label>
+          <input type="radio" name="stance_${uid}" id="de_${uid}" value="detractor" ${stance==='detractor'?'checked':''} onchange="setStance('${l.name}','detractor')">
+          <label for="de_${uid}" class="detr-opt">Detractor</label>
+        </div>
+      </td>
+      <td style="text-align:center;font-size:12px;color:${(locationTraining[l.location]||'') ? '#10B981' : '#475569'}">${locationTraining[l.location] || '—'}</td>
+      <td><textarea class="email-notes" data-name="${l.name}" onfocus="this.style.minHeight='60px'" onblur="updateNote(this)">${note}</textarea></td>
+      <td class="survey-cell"><span class="survey-label">Favorite thing about Voze?</span><textarea class="survey-q" data-name="${l.name}" data-q="q1" placeholder="Their answer..." onfocus="this.style.minHeight='50px'" onblur="updateSurvey(this)">${(surveyData[l.name]||{}).q1||''}</textarea></td>
+      <td class="survey-cell"><span class="survey-label">Most value for company?</span><textarea class="survey-q" data-name="${l.name}" data-q="q2" placeholder="Their answer..." onfocus="this.style.minHeight='50px'" onblur="updateSurvey(this)">${(surveyData[l.name]||{}).q2||''}</textarea></td>
+      <td class="survey-cell"><span class="survey-label">Would change about Voze?</span><textarea class="survey-q" data-name="${l.name}" data-q="q3" placeholder="Their answer..." onfocus="this.style.minHeight='50px'" onblur="updateSurvey(this)">${(surveyData[l.name]||{}).q3||''}</textarea></td>
+    </tr>`;
+  }).join('');
+
+  // Update stats
+  document.getElementById('totalLeaders').textContent = leaders.length;
+  document.getElementById('activeLeaders').textContent = leaders.filter(l => l.comments > 0).length;
+  document.getElementById('champCount').textContent = Object.values(stanceData).filter(v => v === 'champion').length;
+  document.getElementById('detrCount').textContent = Object.values(stanceData).filter(v => v === 'detractor').length;
+
+  // Update sort indicators
+  document.querySelectorAll('thead th').forEach(th => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+    if (th.dataset.col === sortCol) {
+      th.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+    }
+  });
+}
+
+function setStance(name, value) {
+  if (stanceData[name] === value) {
+    delete stanceData[name];
+  } else {
+    stanceData[name] = value;
+  }
+  renderTable();
+  saveData();
+}
+
+function updateNote(el) {
+  noteData[el.dataset.name] = el.value;
+  el.style.minHeight = '28px';
+  saveData();
+}
+
+function updateSurvey(el) {
+  const name = el.dataset.name;
+  const q = el.dataset.q;
+  if (!surveyData[name]) surveyData[name] = {};
+  surveyData[name][q] = el.value;
+  el.style.minHeight = '26px';
+  saveData();
+}
+
+function saveData() {
+  const data = { stances: stanceData, notes: noteData, survey: surveyData, saved: new Date().toISOString() };
+  localStorage.setItem('ptg_scorecard', JSON.stringify(data));
+  const msg = document.getElementById('saveMsg');
+  msg.style.display = 'inline';
+  setTimeout(() => msg.style.display = 'none', 2000);
+}
+
+function exportCSV() {
+  const rows = [['Name','Title','Region','Location','Voze Comments','Engagement Score','Stance','Notes','Favorite Thing About Voze','Most Value For Company','Would Change About Voze']];
+  leaders.forEach(l => {
+    const s = surveyData[l.name] || {};
+    rows.push([
+      l.name, l.title, l.region, l.location, l.comments,
+      engagementScore(l), stanceData[l.name]||'', (noteData[l.name]||'').replace(/\n/g,' '),
+      (s.q1||'').replace(/\n/g,' '), (s.q2||'').replace(/\n/g,' '), (s.q3||'').replace(/\n/g,' ')
+    ]);
+  });
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'PTG_Leader_Scorecard.csv';
+  a.click();
+}
+
+// Sort on header click
+document.querySelectorAll('thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) {
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortCol = col;
+      sortDir = col === 'name' || col === 'title' ? 'asc' : 'desc';
+    }
+    renderTable();
+  });
+});
+
+// Filter listeners
+['searchBox','regionFilter','stanceFilter','activeFilter'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderTable);
+  document.getElementById(id).addEventListener('change', renderTable);
+});
+
+// Init
+loadSaved();
+renderTable();
+</script>
+</body>
+</html>
