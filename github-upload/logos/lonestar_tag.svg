@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <rect width="400" height="200" fill="#0a0a0a"/>
+  <polygon points="200,25 208,50 235,50 213,65 221,90 200,75 179,90 187,65 165,50 192,50" fill="#E31837"/>
+  <text x="200" y="130" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="30" font-weight="900" fill="#FFFFFF" letter-spacing="3">LONESTAR</text>
+  <text x="200" y="162" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#CCCCCC" letter-spacing="5">TRUCK GROUP</text>
+</svg>
