@@ -620,8 +620,8 @@ function renderCurrentCard(c) {
     <div class="rank">#${c.rank}</div>
     <h2 style="text-decoration-color:${uc};">${c.name}</h2>
     <div class="arr"><span style="font-size:14px;font-weight:700;color:#64748B;letter-spacing:0.5px;vertical-align:middle;">ARR </span>${fmt$(c.arr)}</div>
-    <div style="margin:-4px 0 8px;">${customerSinceTag(c.since)} <span class="renewal-tag">Renewal: ${c.renewal}</span></div>
     <div class="ytd-expansion">YTD Expansion: <span class="${c.ytdExpansion>0?'ytd-pos':c.ytdExpansion<0?'ytd-neg':'ytd-zero'}">${c.ytdExpansion>=0?'+'+fmt$(c.ytdExpansion):'-'+fmt$(Math.abs(c.ytdExpansion))}</span></div>
+    <div style="margin:4px 0 8px;">${customerSinceTag(c.since)} <span class="renewal-tag">Renewal: ${c.renewal}</span></div>
     <div class="meta">
       <div class="meta-item"><span class="meta-label">Client Health:</span> <span class="${sc} status-badge">${c.status}</span>${npsDisplay}</div>
       ${c.contact ? `<div class="meta-item"><span class="meta-label">Primary Contact:</span> <span class="contact-name">${c.contact}</span>${c.contactRole?' — '+c.contactRole:''}${repTag}</div>` : (repTag ? `<div class="meta-item"><span class="meta-label">Sales Rep:</span>${repTag}</div>` : '')}
