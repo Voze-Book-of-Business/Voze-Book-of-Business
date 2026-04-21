@@ -224,7 +224,8 @@ const dealerPhotos = {
                         "img": "https://www.bptruckcenters.com/wp-content/uploads/aerial2.png",
                         "page": "https://www.bptruckcenters.com/locations/norfolk-va-potomac-truck-center/"
             },
-            "Linthicum": {
+            "Baltimore": { "img": "https://www.bptruckcenters.com/assets/BTC-Linthicum.jpg", "page": "https://www.bptruckcenters.com/locations/linthicum-md-mack/" },
+        "Linthicum": {
                         "img": "https://www.bptruckcenters.com/assets/BTC-Linthicum-Volvo.jpg",
                         "page": "https://www.bptruckcenters.com/locations/linthicum-md-volvo/"
             }
@@ -381,7 +382,7 @@ function initializeCards() {
             if (dealerInfo && dealerInfo.img) {
                 headerHTML = `
                     <div class="card-location-header">
-                        <img src="${dealerInfo.img}" alt="${locationName}" class="dealer-photo" onerror="this.style.display='none'">
+                        <img src="${dealerInfo.img}" alt="${locationName}" class="dealer-photo" referrerpolicy="no-referrer" onerror="this.style.display='none'">
                         <div class="dealer-location-info">
                             <div class="dealer-location-name">${loc}</div>
                             ${dealerInfo.page ? '<a href="'+dealerInfo.page+'" target="_blank" class="dealer-page-link">View Dealer Page</a>' : ''}
