@@ -268,7 +268,7 @@ const customerLogos = {
   "McMahon Truck Centers": { url: "https://mcmahontrucks.com/wp-content/uploads/2024/03/MTC-Logo-No-Tag.svg", border: "#003DA5" },
   "Jim Hawk Truck Trailers": { url: "logos/jim_hawk.svg", border: "#E31837" },
   "TranSource, Inc.": { url: "https://www.transourcetrucks.com/images/transourcetrucks-logo.png", border: "#D22630" },
-  "Baltimore Potomac Truck Centers": { url: "https://www.bptruckcenters.com/assets/BP_Logo.png", border: "#003DA5" },
+  "Baltimore Potomac Truck Centers": { url: "https://bfrw.org/wp-content/uploads/2020/12/baltmore-potomac.png", border: "#003DA5" },
   "Campbell Supply Company": { url: "https://www.campbellsupply.com/efs/wp/domains/www.campbellsupply.com/wp-content/uploads/2023/06/cropped-image-32.png", border: "#C8102E" },
   "Lonestar Truck Group": { url: "logos/lonestar_tag.png", border: "#E31837", bg: "#0a0a0a" },
   "Godwin Group": { url: "logos/godwin_group.png", border: "#00A3E0", bg: "#0a0a0a" },
@@ -621,7 +621,7 @@ function renderCurrentCard(c) {
     <h2 style="text-decoration-color:${uc};">${c.name}</h2>
     <div class="arr"><span style="font-size:14px;font-weight:700;color:#64748B;letter-spacing:0.5px;vertical-align:middle;">ARR </span>${fmt$(c.arr)}</div>
     <div class="ytd-expansion">YTD Expansion: <span class="${c.ytdExpansion>0?'ytd-pos':c.ytdExpansion<0?'ytd-neg':'ytd-zero'}">${c.ytdExpansion>=0?'+'+fmt$(c.ytdExpansion):'-'+fmt$(Math.abs(c.ytdExpansion))}</span></div>
-    <div style="margin:4px 0 8px;">${customerSinceTag(c.since)} <span class="renewal-tag">Renewal: ${c.renewal}</span></div>
+    <div style="margin:4px 0 8px;padding-right:185px;">${customerSinceTag(c.since)} <span class="renewal-tag">Renewal: ${c.renewal}</span></div>
     <div class="meta">
       <div class="meta-item"><span class="meta-label">Client Health:</span> <span class="${sc} status-badge">${c.status}</span>${npsDisplay}</div>
       ${c.contact ? `<div class="meta-item"><span class="meta-label">Primary Contact:</span> <span class="contact-name">${c.contact}</span>${c.contactRole?' — '+c.contactRole:''}${repTag}</div>` : (repTag ? `<div class="meta-item"><span class="meta-label">Sales Rep:</span>${repTag}</div>` : '')}
