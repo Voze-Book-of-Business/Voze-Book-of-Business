@@ -340,7 +340,7 @@ const customers = [
      {label:"Account Plan", href:"https://drive.google.com/file/d/1CCYVyYG3gOVDkrULr-jBvp7h7OIN0e9P/view", type:""},
      {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/17346217779", type:""},
    ]},
-  {rank:12, name:"Bruckner's", arr:75120, ytdExpansion:19380, renewal:"10/31/2028", since:"2024-08", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Brian Wade", contactRole:"VP of Parts", nps:null, referrals:"", roles:{"Truck Sales": 54, "Parts": 30, "Managers": 39}, cbrsYTD:0, lastOnsite:"02/04/2026", blockers:"Opportunities and Activity Reporting. Also waiting on DMS Sales data", highWide:"", kpis:"", adoption:"Rolled out Opportunities and trying to get reps habits in place", utilization:"", expansion:"Currently adding new locations. Working with Jesse on these", opps:"", pages:[
+  {rank:12, name:"Bruckner's", arr:81060, ytdExpansion:25320, renewal:"10/31/2028", since:"2024-08", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Brian Wade", contactRole:"VP of Parts", nps:null, referrals:"", roles:{"Truck Sales": 58, "Parts": 24, "Managers": 22, "Inside Sales": 24}, cbrsYTD:0, lastOnsite:"02/04/2026", blockers:"Opportunities and Activity Reporting. Also waiting on DMS Sales data", highWide:"", kpis:"", adoption:"Rolled out Opportunities and trying to get reps habits in place", utilization:"", expansion:"Currently adding new locations. Working with Jesse on these", opps:"", pages:[
      {label:"Leadership Org Chart", href:"Bruckner's_Org_Chart.html", type:"active"},
      {label:"Executive Overview", href:"https://docs.google.com/presentation/d/11nlzAq_GxRa1MOHs23vVcx7stdg3cQxpy78DhTux_Nk/edit", type:""},
      {label:"Account Plan", href:"https://drive.google.com/file/d/1TIHGSabifsMUqe59y7gp3-cnwhJ-p7L0/view", type:""},
@@ -523,7 +523,7 @@ function renderStats() {
   const yellow = current.filter(c => c.status === 'Yellow').length;
   const red = current.filter(c => c.status === 'Red').length;
   document.getElementById('stats').innerHTML = `
-    <div class="stat"><div class="v">${current.length}</div><div class="l">Current Customers</div></div>
+    <div class="stat"><div class="v">${current.length + onboarding.length}</div><div class="l">Current Customers</div></div>
     <div class="stat"><div class="v">${fmt$(totalArr)}</div><div class="l">Total ARR</div></div>
     <div class="stat"><div class="v">${fmt$(onboardingArr)}</div><div class="l">Onboarding ARR (${onboarding.length})</div></div>
     <div class="stat"><div class="v">${pilot.length > 0 && pilot[0].potentialArr ? pilot[0].potentialArr : fmt$(pilotArr)}</div><div class="l">Piloting ARR (${pilot.length})</div></div>
