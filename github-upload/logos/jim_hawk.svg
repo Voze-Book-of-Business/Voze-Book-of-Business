@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <rect width="400" height="200" fill="#FFFFFF"/>
+  <path d="M200 20 C220 20 240 30 250 50 C255 40 260 35 270 33 C260 28 245 15 220 15 C210 12 200 15 195 15 C170 15 155 28 145 33 C155 35 160 40 165 50 C175 30 185 20 200 20Z" fill="#C8102E" opacity="0.9"/>
+  <path d="M165 50 C170 60 175 65 180 68 L200 55 L220 68 C225 65 230 60 235 50 C230 55 220 62 200 48 C180 62 170 55 165 50Z" fill="#C8102E" opacity="0.7"/>
+  <text x="200" y="110" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="36" font-weight="900" fill="#C8102E">JIM HAWK</text>
+  <text x="200" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#333" letter-spacing="3">TRUCK TRAILERS</text>
+  <line x1="80" y1="155" x2="320" y2="155" stroke="#C8102E" stroke-width="2"/>
+</svg>
