@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <rect width="400" height="200" fill="#2d2d2d"/>
+  <text x="200" y="75" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="32" font-weight="900" fill="#C0C0C0" letter-spacing="2">TRUCK CENTER</text>
+  <text x="200" y="115" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="28" font-weight="900" fill="#C0C0C0" letter-spacing="2">COMPANIES</text>
+  <line x1="60" y1="135" x2="340" y2="135" stroke="#8B7355" stroke-width="3"/>
+  <text x="200" y="165" text-anchor="middle" font-family="Arial" font-size="14" fill="#8B7355" letter-spacing="4">FREIGHTLINER · WESTERN STAR</text>
+</svg>
