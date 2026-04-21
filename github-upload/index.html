@@ -98,6 +98,29 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#D5DAE
 .referrals-box .ref-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7C3AED;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .referrals-box .ref-content{font-size:14px;color:#475569;line-height:1.5}
 .referrals-box .ref-none{color:#CBD5E1;font-style:italic;font-size:13px}
+.ref-item{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;margin:4px 0;background:linear-gradient(135deg,rgba(45,74,122,0.7),rgba(55,90,150,0.5));border-radius:6px;border-left:3px solid #D4A843;border:1px solid rgba(255,255,255,0.12)}
+.ref-company{color:#D4A843;font-weight:600;font-size:13px}
+.ref-arr{color:#4ade80;font-weight:700;font-size:13px}
+.ref-arr.pilot{color:#94a3b8}
+
+.referral-link{position:fixed !important;top:12px !important;left:16px !important;z-index:99999 !important;color:#D4A843;font-weight:700;font-size:13px;text-decoration:none;background:rgba(26,54,93,0.95);padding:8px 16px;border-radius:8px;border:1px solid #D4A843;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.referral-link:hover{background:rgba(212,168,67,0.2)}
+
+.referral-banner{background:linear-gradient(135deg,#1a365d 0%,#2d4a7a 100%);border-radius:12px;padding:24px 32px;margin:20px 24px 40px;border:2px solid #D4A843}
+.referral-banner-title{color:#D4A843;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.referral-banner-subtitle{color:#94a3b8;font-size:13px;margin-bottom:16px}
+.referral-banner-stats{display:flex;gap:24px;margin-bottom:18px}
+.referral-stat-box{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:12px 20px;text-align:center;min-width:140px}
+.referral-stat-number{font-size:28px;font-weight:800;color:#4ade80}
+.referral-stat-label{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.referral-flow-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.referral-flow-item{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;border-left:3px solid #D4A843}
+.referral-flow-from{color:#e2e8f0;font-size:12px;font-weight:500}
+.referral-flow-arrow{color:#D4A843;font-size:16px;margin:0 8px}
+.referral-flow-to{color:#ffffff;font-weight:800;font-size:13px}
+.referral-flow-arr{color:#4ade80;font-weight:800;font-size:14px;margin-left:auto;padding-left:10px}
+.referral-flow-arr.pilot{color:#94a3b8}
+
 
 .reports-btn{display:inline-flex;align-items:center;gap:4px;padding:9px 16px;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.15s;border:1px solid #7C3AED;color:#7C3AED;background:rgba(124,58,237,0.06);cursor:pointer}
 .reports-btn:hover{background:rgba(124,58,237,0.15);color:#6D28D9}
@@ -173,6 +196,9 @@ footer{text-align:center;padding:20px;color:#94A3B8;font-size:11px;border-top:1p
 </style>
 </head>
 <body>
+
+<a href="#referral-network" class="referral-link">Referral Network ↓</a>
+
 
 <div class="top-bar">
   <div class="industry-tag">COMMERCIAL TRUCKING</div>
@@ -268,7 +294,7 @@ const customers = [
      {label:"Account Plan", href:"https://drive.google.com/file/d/1giSWeKVUTHtKIK5jNhZIvnv8IXTfLb7p/view", type:""},
      {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/17423503246", type:""},
    ]},
-  {rank:3, name:"California Truck Center", arr:196140, ytdExpansion:3240, renewal:"03/31/2027", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Whitney Gebhard", contactRole:"VP of Operations", nps:null, referrals:"", roles:{"Truck Sales": 49, "Parts": 9, "Managers": 18, "Inside Sales": 34}, cbrsYTD:1, lastOnsite:"10/02/2025", blockers:"Procede Reporting is not complete. We are not doing truck sales data any more.", highWide:"Onsite With Rick. Andy presenting at their Manager and Reps Annual kickoff", kpis:"", adoption:"", utilization:"", expansion:"Trying to hang on to truck sales and expand in that area", opps:"", pages:[
+  {rank:3, name:"California Truck Center", arr:196140, ytdExpansion:3240, renewal:"03/31/2027", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Whitney Gebhard", contactRole:"VP of Operations", nps:null, referrals:[{name:"Empire Truck",arr:"In Sales Process",isPilot:true}], roles:{"Truck Sales": 49, "Parts": 9, "Managers": 18, "Inside Sales": 34}, cbrsYTD:1, lastOnsite:"10/02/2025", blockers:"Procede Reporting is not complete. We are not doing truck sales data any more.", highWide:"Onsite With Rick. Andy presenting at their Manager and Reps Annual kickoff", kpis:"", adoption:"", utilization:"", expansion:"Trying to hang on to truck sales and expand in that area", opps:"", pages:[
      {label:"Leadership Org Chart", href:"California_Truck_Center_Org_Chart.html", type:"active"},
      {label:"Executive Overview", href:"https://docs.google.com/presentation/d/14sAlZqMApQqfnCXh11wnINk1iQV_wnT62MAMATnLVfs/edit", type:""},
      {label:"Account Plan", href:"https://drive.google.com/file/d/1A8cI8-zrdxkL04Qx3omkzN4ukQcQMgvS/view", type:""},
@@ -311,7 +337,7 @@ const customers = [
      {label:"Account Plan", href:"https://drive.google.com/file/d/1GNdz5g7Px867Ugj-U4PSjOeXoXZ_1-bA/view", type:""},
      {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/49741080470", type:""},
    ]},
-  {rank:11, name:"Truckworx", arr:75600, ytdExpansion:0, renewal:"09/21/2035", status:"Red", category:"Current", rep:"Myles Brill", contact:"Chris Cummings", contactRole:"Parts Director", nps:null, referrals:"", roles:{"Truck Sales": 25, "Parts": 1, "Managers": 21, "Inside Sales": 2}, cbrsYTD:0, lastOnsite:"12/15/2025", blockers:"Karmak Reporting.", highWide:"", kpis:"Working on some Rep Insights to drive value", adoption:"", utilization:"", expansion:"", opps:"", pages:[
+  {rank:11, name:"Truckworx", arr:75600, ytdExpansion:0, renewal:"09/21/2035", status:"Red", category:"Current", rep:"Myles Brill", contact:"Chris Cummings", contactRole:"Parts Director", nps:null, referrals:[{name:"MHC",arr:"Pilot",isPilot:true}], roles:{"Truck Sales": 25, "Parts": 1, "Managers": 21, "Inside Sales": 2}, cbrsYTD:0, lastOnsite:"12/15/2025", blockers:"Karmak Reporting.", highWide:"", kpis:"Working on some Rep Insights to drive value", adoption:"", utilization:"", expansion:"", opps:"", pages:[
      {label:"Leadership Org Chart", href:"Truckworx_Org_Chart.html", type:"active"},
      {label:"Account Plan", href:"https://drive.google.com/file/d/1CCYVyYG3gOVDkrULr-jBvp7h7OIN0e9P/view", type:""},
      {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/17346217779", type:""},
@@ -345,12 +371,12 @@ const customers = [
      {label:"Account Plan", href:"https://drive.google.com/file/d/16sezyIHULuvjSiRFqbFlKrBooh-zis5Z/view", type:""},
      {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15166624884", type:""},
    ]},
-  {rank:17, name:"Baltimore Potomac Truck Centers", arr:39433, ytdExpansion:0, renewal:"12/14/2029", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Bill Koontz", contactRole:"General Manager", nps:null, referrals:"", roles:{"Truck Sales": 16, "Parts": 6, "Managers": 14}, cbrsYTD:0, lastOnsite:"---", blockers:"", highWide:"", kpis:"", adoption:"Ikwo is onsite training this week", utilization:"", expansion:"", opps:"", pages:[
+  {rank:17, name:"Baltimore Potomac Truck Centers", arr:39433, ytdExpansion:0, renewal:"12/14/2029", status:"Green", category:"Current", rep:"Jesse Miller", contact:"Bill Koontz", contactRole:"General Manager", nps:null, referrals:[{name:"Tri-State Truck Center",arr:"$72,096",isPilot:false}], roles:{"Truck Sales": 16, "Parts": 6, "Managers": 14}, cbrsYTD:0, lastOnsite:"---", blockers:"", highWide:"", kpis:"", adoption:"Ikwo is onsite training this week", utilization:"", expansion:"", opps:"", pages:[
      {label:"Leadership Org Chart", href:"Baltimore_Potomac_Truck_Centers_Org_Chart.html", type:"active"},
      {label:"Account Plan", href:"https://drive.google.com/file/d/1XmBvP9zYjq6ITmCUM_ks0kW5kPTFCl97/view", type:""},
      {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/43720019500", type:""},
    ]},
-  {rank:18, name:"Campbell Supply Company", arr:31738, ytdExpansion:0, renewal:"07/31/2026", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Mason Campbell", contactRole:"Owner", nps:null, referrals:"", roles:{"Truck Sales": 7, "Managers": 8}, cbrsYTD:0, lastOnsite:"07/30/2025", blockers:"Procede DMS Data, and Activity Reporting", highWide:"", kpis:"", adoption:"Just trained and onboarded Truck sales", utilization:"", expansion:"", opps:"", pages:[
+  {rank:18, name:"Campbell Supply Company", arr:31738, ytdExpansion:0, renewal:"07/31/2026", status:"Yellow", category:"Current", rep:"Jesse Miller", contact:"Mason Campbell", contactRole:"Owner", nps:null, referrals:[{name:"Vital Transport",arr:"$28,800",isPilot:false},{name:"Truck Center Companies",arr:"$92,496",isPilot:false}], roles:{"Truck Sales": 7, "Managers": 8}, cbrsYTD:0, lastOnsite:"07/30/2025", blockers:"Procede DMS Data, and Activity Reporting", highWide:"", kpis:"", adoption:"Just trained and onboarded Truck sales", utilization:"", expansion:"", opps:"", pages:[
      {label:"Leadership Org Chart", href:"Campbell_Supply_Org_Chart.html", type:"active"},
      {label:"Account Plan", href:"https://drive.google.com/file/d/1e7gqpxUK3nYteqDGDBo_rSgROmot4NON/view", type:""},
      {label:"Contract", href:"https://app.hubspot.com/contacts/21678687/record/0-2/15859013256", type:""},
@@ -588,7 +614,7 @@ function renderCurrentCard(c) {
   const lh = c.pages.length>0 ? c.pages.map(p=>`<a href="${p.href}" class="${p.type}"${p.href.startsWith('http')?' target="_blank" rel="noopener"':''}>${p.label}</a>`).join('')+rb : (rb||'<span class="no-page">No scorecard yet</span>');
   const npsDisplay = c.nps !== null && c.nps !== undefined ? `<span class="nps-badge ${npsClass(c.nps)}">NPS: ${c.nps}</span>` : `<span class="nps-badge">NPS: ---</span>`;
   const repTag = c.rep ? `<span class="rep-tag ${repClass(c.rep)}">${c.rep}</span>` : '';
-  const referralsHtml = c.referrals ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
+  const referralsHtml = (Array.isArray(c.referrals) && c.referrals.length > 0) ? `<div class="referrals-box"><div class="ref-title">Referrals</div>${c.referrals.map(r => `<div class="ref-item"><span class="ref-company">${r.name}</span><span class="ref-arr${r.isPilot?' pilot':''}">${r.arr}</span></div>`).join('')}</div>` : (c.referrals && typeof c.referrals === 'string') ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
 
   return `<div class="card">
     <div class="accent ${ac}"></div>
@@ -630,7 +656,7 @@ function renderOnboardingCard(c) {
   const lh=c.pages.length>0?c.pages.map(p=>`<a href="${p.href}" class="${p.type}"${p.href.startsWith('http')?' target="_blank" rel="noopener"':''}>${p.label}</a>`).join(''):'<span class="no-page">Documents coming soon</span>';
   const npsDisplay = c.nps !== null && c.nps !== undefined ? `<span class="nps-badge ${npsClass(c.nps)}">NPS: ${c.nps}</span>` : `<span class="nps-badge">NPS: ---</span>`;
   const repTag = c.rep ? `<span class="rep-tag ${repClass(c.rep)}">${c.rep}</span>` : '';
-  const referralsHtml = c.referrals ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
+  const referralsHtml = (Array.isArray(c.referrals) && c.referrals.length > 0) ? `<div class="referrals-box"><div class="ref-title">Referrals</div>${c.referrals.map(r => `<div class="ref-item"><span class="ref-company">${r.name}</span><span class="ref-arr${r.isPilot?' pilot':''}">${r.arr}</span></div>`).join('')}</div>` : (c.referrals && typeof c.referrals === 'string') ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
 
   return `<div class="card">
     <div class="accent accent-blue"></div>
@@ -666,7 +692,7 @@ function renderPilotCard(c) {
   const lh=c.pages.length>0?c.pages.map(p=>`<a href="${p.href}" class="${p.type}"${p.href.startsWith('http')?' target="_blank" rel="noopener"':''}>${p.label}</a>`).join(''):'<span class="no-page">Documents coming soon</span>';
   const npsDisplay = c.nps !== null && c.nps !== undefined ? `<span class="nps-badge ${npsClass(c.nps)}">NPS: ${c.nps}</span>` : `<span class="nps-badge">NPS: ---</span>`;
   const repTag = c.rep ? `<span class="rep-tag ${repClass(c.rep)}">${c.rep}</span>` : '';
-  const referralsHtml = c.referrals ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
+  const referralsHtml = (Array.isArray(c.referrals) && c.referrals.length > 0) ? `<div class="referrals-box"><div class="ref-title">Referrals</div>${c.referrals.map(r => `<div class="ref-item"><span class="ref-company">${r.name}</span><span class="ref-arr${r.isPilot?' pilot':''}">${r.arr}</span></div>`).join('')}</div>` : (c.referrals && typeof c.referrals === 'string') ? `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-content">${c.referrals}</div></div>` : `<div class="referrals-box"><div class="ref-title">Referrals</div><div class="ref-none">None recorded yet</div></div>`;
 
   return `<div class="card">
     <div class="accent accent-purple"></div>
@@ -739,5 +765,25 @@ function selectAllReports(n){for(let i=0;i<n;i++){document.getElementById('repor
 function updateSelectedCount(){const n=document.querySelectorAll('.report-list input[type="checkbox"]:checked').length;const el=document.getElementById('reports-selected-count');if(el)el.textContent=n+' selected';}
 function openSelectedReports(name){const reps=customerReports[name];if(!reps)return;const sel=[];reps.forEach((r,i)=>{if(document.getElementById('report-cb-'+i)?.checked)sel.push(r.file);});if(!sel.length){alert('Please select at least one report.');return;}sel.forEach(f=>window.open(f,'_blank'));closeDocModal();}
 </script>
+
+<div class="referral-banner" id="referral-network">
+  <div class="referral-banner-title">⭐ Referral Network</div>
+  <div class="referral-banner-subtitle">Customers referring new business — a key growth driver for Commercial Trucking</div>
+  <div class="referral-banner-stats">
+    <div class="referral-stat-box"><div class="referral-stat-number">7</div><div class="referral-stat-label">Referrals</div></div>
+    <div class="referral-stat-box"><div class="referral-stat-number">$274,465</div><div class="referral-stat-label">Referred ARR (Closed)</div></div>
+    <div class="referral-stat-box"><div class="referral-stat-number">6</div><div class="referral-stat-label">Referring Customers</div></div>
+  </div>
+  <div class="referral-flow-grid">
+    <div class="referral-flow-item"><span class="referral-flow-from">Baltimore Potomac</span><span class="referral-flow-arrow">→</span><span class="referral-flow-to">Tri-State Truck Center</span><span class="referral-flow-arr">$72,096</span></div>
+    <div class="referral-flow-item"><span class="referral-flow-from">Affinity Truck</span><span class="referral-flow-arrow">→</span><span class="referral-flow-to">Baltimore Potomac</span><span class="referral-flow-arr">$39,433</span></div>
+    <div class="referral-flow-item"><span class="referral-flow-from">Campbell Supply</span><span class="referral-flow-arrow">→</span><span class="referral-flow-to">Vital Transport</span><span class="referral-flow-arr">$28,800</span></div>
+    <div class="referral-flow-item"><span class="referral-flow-from">Campbell Supply</span><span class="referral-flow-arrow">→</span><span class="referral-flow-to">Truck Center Companies</span><span class="referral-flow-arr">$92,496</span></div>
+    <div class="referral-flow-item"><span class="referral-flow-from">Shealy</span><span class="referral-flow-arrow">→</span><span class="referral-flow-to">Housby</span><span class="referral-flow-arr">$41,640</span></div>
+    <div class="referral-flow-item"><span class="referral-flow-from">Truck Worx</span><span class="referral-flow-arrow">→</span><span class="referral-flow-to">MHC</span><span class="referral-flow-arr pilot">Pilot</span></div>
+    <div class="referral-flow-item"><span class="referral-flow-from">California Truck Centers</span><span class="referral-flow-arrow">→</span><span class="referral-flow-to">Empire Truck</span><span class="referral-flow-arr pilot">In Sales Process</span></div>
+  </div>
+</div>
+
 </body>
 </html>
