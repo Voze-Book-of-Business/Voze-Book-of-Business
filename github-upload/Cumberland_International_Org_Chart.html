@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cumberland International - Org Chart & Engagement Scorecard</title>
+<title>Cumberland International - Leadership Org Chart & Engagement Scorecard</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#D5DAE1;color:#1E293B;line-height:1.5}
@@ -43,7 +43,8 @@ input[type="text"]:focus,select:focus{outline:none;border-color:#F59E0B;box-shad
 .card.neutral{border-left-color:#F59E0B;border-right-color:#334155;border-top-color:#334155;border-bottom-color:#334155}
 .card.detractor{border-left-color:#EF4444;border-right-color:#EF4444;border-top-color:#EF4444;border-bottom-color:#EF4444}
 .card-header{display:flex;align-items:center;margin-bottom:12px;gap:12px}
-.avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0}
+.avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
 .avatar.ceo{background-color:#F59E0B;color:#0F172A}
 .avatar.evp{background-color:#3B82F6;color:#FFF}
 .avatar.director{background-color:#8B5CF6;color:#FFF}
@@ -96,7 +97,7 @@ input[type="text"]:focus,select:focus{outline:none;border-color:#F59E0B;box-shad
 .leaflet-popup-content-wrapper{background:#FFFFFF;color:#1E293B;border:1px solid #E2E8F0;border-radius:8px}
 .leaflet-popup-tip{background:#FFFFFF}
 .leaflet-popup-content{margin:10px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-@media(max-width:768px){.container{padding:12px}.stats-bar{grid-template-columns:repeat(2,1fr)}.filter-row{grid-template-columns:1fr}.card-container,.card-container.evp-level,.card-container.directors-level{grid-template-columns:1fr}.logo{font-size:32px}}
+@media(max-width:768px){.container{padding:12px}.stats-bar{grid-template-columns:repeat(2,1fr)}.filter-row{grid-template-columns:1fr}.card-container,.card-container.evp-level,.card-container.directors-level{grid-template-columns:1fr}.logo{font-size:32px}.dealer-photo{width:200px;height:140px}.card-location-header{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -108,7 +109,7 @@ input[type="text"]:focus,select:focus{outline:none;border-color:#F59E0B;box-shad
         <div id="map-container" style="width:100%;height:500px;border-radius:12px;border:1px solid #E2E8F0;z-index:1;margin-bottom:20px;"></div>
 
         <div class="stats-bar">
-            <div class="stat-item"><div class="stat-label">Total Personnel</div><div class="stat-value" id="stat-total">0</div></div>
+            <div class="stat-item"><div class="stat-label">Total Leadership</div><div class="stat-value" id="stat-total">0</div></div>
             <div class="stat-item"><div class="stat-label">Locations</div><div class="stat-value">6</div></div>
             <div class="stat-item"><div class="stat-label">Champions</div><div class="stat-value" id="stat-champions">0</div></div>
             <div class="stat-item"><div class="stat-label">Detractors</div><div class="stat-value" id="stat-detractors">0</div></div>
@@ -128,7 +129,8 @@ input[type="text"]:focus,select:focus{outline:none;border-color:#F59E0B;box-shad
                     <option value="">All Regions</option>
                     <option value="Corporate">Corporate</option>
                     <option value="Tennessee">Tennessee</option>
-                    <option value="Florida">Florida</option></select>
+                    <option value="Florida">Florida</option>
+                </select>
             </div>
             <div class="filter-group">
                 <label class="filter-label">Leadership Sentiment</label>
@@ -152,10 +154,8 @@ input[type="text"]:focus,select:focus{outline:none;border-color:#F59E0B;box-shad
     </div>
 
     <div class="corporate-section hide-on-filter" id="corporate-section">
-        <div class="section-header">Executive Leadership</div>
+        <div class="section-header">President & Corporate Leadership</div>
         <div class="card-container ceo-level" id="ceo-container"></div>
-        <div class="section-header">Executive Vice Presidents</div>
-        <div class="card-container evp-level" id="evp-container"></div>
         <div class="section-header">Directors</div>
         <div class="card-container directors-level" id="directors-container"></div>
     </div>
@@ -169,43 +169,102 @@ input[type="text"]:focus,select:focus{outline:none;border-color:#F59E0B;box-shad
 
 <div class="container">
     <div class="export-section hide-on-filter">
-        <button class="btn btn-primary" id="export-btn-footer">Export All Personnel to CSV</button>
+        <button class="btn btn-primary" id="export-btn-footer">Export All Leadership to CSV</button>
     </div>
 </div>
 
 <script>
 const phoneNumbers = {
-    "Jacob Kerbel":"615-829-7908","Austin Ball":"615-330-8145","Joe Gould":"615-829-7807",
-    "Neil Huffines":"615-829-7844","Erick Creasey":"615-486-1797","Josh Mullican":"615-580-0486",
-    "Matt Smart":"615-598-2120","Bradyn Randall":"615-598-2730","Sondra Williams":"615-879-3996",
-    "Kim Fackleman":"615-626-0145","Chris Johnson":"615-651-9945","Spencer Prichard":"615-906-0876",
-    "Tommy Pearson":"615-598-4785","Ethan Roller":"615-762-5910","Shawn Dickeson":"615-499-1518",
-    "Ashley Scurlock":"615-598-3572","Cason Nobels":"615-598-8521",
-    "Casey Croff":"615-427-4625","Ty Curtis":"629-292-5319",
-    "Kirk Morse":"407-367-1102","AJ Ramos":"407-558-9473","Paul Brown":"407-951-1586",
-    "JC Ceballos":"407-488-4497","Steve Jenkins":"407-488-9728","Matt Schwartz":"904-575-0060",
-    "Chuck Calhoun":"407-466-1074","Seif Chaoui":"407-832-6181","Beau Duchesne":"407-427-0815",
-    "David Keitt":"321-288-8043","Kevin Mohamed":"352-427-0143",
-    "Jesse Wilson":"407-286-9865","Mike O'Brien":"904-219-9766","Tony Duhart":"904-676-3217",
-    "Blake Killion":"904-237-6797","Olivia Higginbotham":"904-832-2732","Molly Wilson":"407-592-9547",
-    "Brian Scott":"904-676-4940","George Sharpe":"407-720-0522","Cameron Mastin":"904-509-0013",
-    "Kaitlin Wittman":"904-626-0229",
-    "Will Harris":"352-274-2331","Eric Riddle":"352-875-2171","Renee Ozment":"352-274-5966",
-    "Danny Nippers":"407-466-7472","Billy Munroe":"352-302-5209","Ron Wilson":"352-220-9980",
-    "Sally Wilson":"352-355-8793","Tracy LaMonte":"352-427-7032",
-    "Nicole Carter":"386-547-7276","Brandon Crawford":"689-326-2208","Chris Ocheltree":"407-630-1011"
+    "Arthur Garcia": "",
+    "Holly Czuba": "",
+    "Jacob Kerbel": "615-829-7908",
+    "Austin Ball": "615-330-8145",
+    "Joe Gould": "615-829-7807",
+    "Neil Huffines": "615-829-7844",
+    "Matt Smart": "615-598-2120",
+    "Casey Croff": "615-427-4625",
+    "Ty Curtis": "629-292-5319",
+    "Kirk Morse": "407-367-1102",
+    "Paul Brown": "407-951-1586",
+    "Steve Jenkins": "407-488-9728",
+    "Matt Schwartz": "615-598-2120",
+    "Jesse Wilson": "407-286-9865",
+    "Blake Killion": "904-237-6797",
+    "Brian Scott": "904-676-4940",
+    "Will Harris": "352-274-2331",
+    "Eric Riddle": "352-875-2171",
+    "Sally Wilson": "352-355-8793",
+    "Nicole Carter": "386-547-7276",
+    "Brandon Crawford": "689-326-2208"
 };
 
-const linkedinProfiles = {};
+const linkedinProfiles = {
+    "Arthur Garcia": "https://www.linkedin.com/in/arthur-garcia-7b05a653/",
+    "Holly Czuba": "https://www.linkedin.com/in/hollyczuba",
+    "Jacob Kerbel": "https://www.linkedin.com/in/jacob-kerbel-75011866/",
+    "Matt Smart": "https://www.linkedin.com/in/matt-smart-3baaa997/",
+    "Casey Croff": "https://www.linkedin.com/in/casey-groff-89633814",
+    "Steve Jenkins": "https://www.linkedin.com/in/steve-jenkins-b3861712/",
+    "Jesse Wilson": "https://www.linkedin.com/in/jesse-wilson-b3983578",
+    "Blake Killion": "https://www.linkedin.com/in/blake-killion-45452a70",
+    "Sally Wilson": "https://www.linkedin.com/in/sally-wilson-708b96b1/",
+    "Neil Huffines": "https://www.linkedin.com/in/neil-huffines-24119551/",
+    "Paul Brown": "https://www.linkedin.com/in/paul-r-brown95/",
+    "Matt Schwartz": "https://www.linkedin.com/in/matt-schwartz-31889953/",
+    "Brandon Crawford": "https://www.linkedin.com/in/brandon-crawford-421195239/",
+    "Eric Riddle": "https://www.linkedin.com/in/eric-riddle-80595482/",
+    "Kirk Morse": "https://www.linkedin.com/in/kirk-morse-820a9551/"
+};
+
+const personPhotos = {
+    "Jacob Kerbel": "https://cumberland-companies.com/wp-content/uploads/2022/09/kerbel-jacob-headshot-square-1.jpg",
+    "Austin Ball": "https://cumberland-companies.com/wp-content/uploads/2024/03/ball-austin-employee-headshot-square-2201.jpg",
+    "Joe Gould": "https://cumberland-companies.com/wp-content/uploads/2022/01/gould-joe-square.jpg",
+    "Neil Huffines": "https://cumberland-companies.com/wp-content/uploads/2023/03/square-nashville-neil-1.jpg",
+    "Matt Smart": "https://cumberland-companies.com/wp-content/uploads/2023/06/smart-matt-square.jpg",
+    "Casey Croff": "https://cumberland-companies.com/wp-content/uploads/2024/02/croff-casey-square-2.jpg",
+    "Ty Curtis": "https://cumberland-companies.com/wp-content/uploads/2024/08/curtis-ty-square.jpg",
+    "Kirk Morse": "https://cumberland-companies.com/wp-content/uploads/2022/01/morse-kirk-square.jpg",
+    "Paul Brown": "https://cumberland-companies.com/wp-content/uploads/2025/01/brown-paul-3.jpg",
+    "Steve Jenkins": "https://cumberland-companies.com/wp-content/uploads/2020/09/jenkins-steve-square.jpg",
+    "Matt Schwartz": "https://cumberland-companies.com/wp-content/uploads/2022/01/schwartz-matt-square.jpg",
+    "Nicole Carter": "https://cumberland-companies.com/wp-content/uploads/2023/05/carter-nicole-square.jpg",
+    "Jesse Wilson": "https://cumberland-companies.com/wp-content/uploads/2022/01/wilson-jesse-square.jpg",
+    "Blake Killion": "https://cumberland-companies.com/wp-content/uploads/2024/10/killion-blake.jpg",
+    "Brian Scott": "https://cumberland-companies.com/wp-content/uploads/2025/03/scott-brian-bw.jpg",
+    "Will Harris": "https://cumberland-companies.com/wp-content/uploads/2022/05/harris-will-1.jpg",
+    "Eric Riddle": "https://cumberland-companies.com/wp-content/uploads/2024/03/riddle-eric-employee-headshot-square-1902.jpg",
+    "Sally Wilson": "https://cumberland-companies.com/wp-content/uploads/2023/06/wilson-sally-square.jpg",
+    "Brandon Crawford": "https://cumberland-companies.com/wp-content/uploads/2024/11/crawford-brandon-headshot-3.jpg"
+};
 
 const dealerPhotos = {
-    "Nashville, TN": { "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/cumberland-nashville-location-front.jpg", "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-nashville-tn/" },
-    "Murfreesboro, TN": { "img": "https://cumberland-companies.com/wp-content/uploads/2024/02/murfreesboro-tn-building-1.jpg", "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-murfreesboro-tn/" },
-    "Orlando, FL": { "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/cumberland-orlando-building.jpg", "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-orlando-fl/" },
-    "Jacksonville, FL": { "img": "https://cumberland-companies.com/wp-content/uploads/2024/10/cumberland-jax-building.jpg", "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-jacksonville-fl/" },
-    "Ocala, FL": { "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/cumberland-ocala-building.jpg", "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-ocala-fl/" },
-    "Daytona Beach, FL": { "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/cumberland-daytona-building.jpg", "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-daytona-beach-fl/" }
+    "Nashville, TN": {
+        "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/nashville-building-1.jpg",
+        "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-nashville-tn/"
+    },
+    "Murfreesboro, TN": {
+        "img": "https://cumberland-companies.com/wp-content/uploads/2024/02/murfreesboro-tn-building-1.jpg",
+        "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-murfreesboro-tn/"
+    },
+    "Orlando, FL": {
+        "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/orlando-building-1.jpg",
+        "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-orlando-fl/"
+    },
+    "Jacksonville, FL": {
+        "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/jacksonville-building-1.jpg",
+        "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-jacksonville-fl/"
+    },
+    "Ocala, FL": {
+        "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/ocala-building-1.jpg",
+        "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-ocala-fl/"
+    },
+    "Daytona Beach, FL": {
+        "img": "https://cumberland-companies.com/wp-content/uploads/2023/06/daytona-building-1.jpg",
+        "page": "https://cumberland-companies.com/contact-locations/cumberland-international-trucks-daytona-beach-fl/"
+    }
 };
+
 const locationDates = {
     "Nashville, TN": { lastOnsite: "", lastTraining: "" },
     "Murfreesboro, TN": { lastOnsite: "", lastTraining: "" },
@@ -216,65 +275,32 @@ const locationDates = {
 };
 
 const roleColorMap = {
-    'CEO': 'ceo', 'EVP': 'evp', 'Director': 'director', 'GM': 'gm',
-    'PM': 'pm', 'ASM': 'asm', 'IC': 'ic', 'SM': 'sm', 'President': 'ceo'
+    'CEO': 'ceo', 'President': 'ceo', 'EVP': 'evp', 'Director': 'director', 'GM': 'gm',
+    'PM': 'pm', 'ASM': 'asm', 'IC': 'ic', 'SM': 'sm'
 };
 
 const allPersonnel = [
-    { name: 'Arthur Garcia', title: 'COO', email: '', role: 'CEO', region: 'Corporate', location: 'Corporate' },
+    { name: 'Arthur Garcia', title: 'President', email: '', role: 'CEO', region: 'Corporate', location: 'Corporate' },
     { name: 'Holly Czuba', title: 'Marketing Director', email: '', role: 'Director', region: 'Corporate', location: 'Corporate' },
     { name: 'Jacob Kerbel', title: 'Service Manager', email: '', role: 'SM', region: 'Tennessee', location: 'Nashville, TN' },
     { name: 'Austin Ball', title: 'Assistant Service Manager', email: '', role: 'ASM', region: 'Tennessee', location: 'Nashville, TN' },
     { name: 'Joe Gould', title: 'Parts Manager', email: '', role: 'PM', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Neil Huffines', title: 'Used Truck Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Erick Creasey', title: 'Municipal Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Josh Mullican', title: 'New Truck Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Matt Smart', title: 'Fleet Sales Manager', email: '', role: 'SM', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Bradyn Randall', title: 'Fleet Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Sondra Williams', title: 'Fleet Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Kim Fackleman', title: 'Capacity Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Chris Johnson', title: 'Parts Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Spencer Prichard', title: 'Parts Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Tommy Pearson', title: 'Parts Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Ethan Roller', title: 'Parts Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Shawn Dickeson', title: 'Parts Sales', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Ashley Scurlock', title: 'Bus Account Manager', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
-    { name: 'Cason Nobels', title: 'EV Coordinator', email: '', role: 'IC', region: 'Tennessee', location: 'Nashville, TN' },
+    { name: 'Neil Huffines', title: 'Used Truck Manager', email: '', role: 'SM', region: 'Tennessee', location: 'Nashville, TN' },
+    { name: 'Matt Smart', title: 'Director of Fleet Sales', email: '', role: 'Director', region: 'Tennessee', location: 'Nashville, TN' },
     { name: 'Casey Croff', title: 'General Manager', email: '', role: 'GM', region: 'Tennessee', location: 'Murfreesboro, TN' },
     { name: 'Ty Curtis', title: 'Parts Manager', email: '', role: 'PM', region: 'Tennessee', location: 'Murfreesboro, TN' },
     { name: 'Kirk Morse', title: 'Parts Manager', email: '', role: 'PM', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'AJ Ramos', title: 'Truck Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
     { name: 'Paul Brown', title: 'Service Manager', email: '', role: 'SM', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'JC Ceballos', title: 'Truck Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'Steve Jenkins', title: 'Truck Sales Manager', email: '', role: 'SM', region: 'Florida', location: 'Orlando, FL' },
+    { name: 'Steve Jenkins', title: 'Sales Director', email: '', role: 'Director', region: 'Florida', location: 'Orlando, FL' },
     { name: 'Matt Schwartz', title: 'Used Truck Manager', email: '', role: 'SM', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'Chuck Calhoun', title: 'Truck Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'Seif Chaoui', title: 'Truck Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'Beau Duchesne', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'David Keitt', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'Randy Diaz', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
-    { name: 'Kevin Mohamed', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Orlando, FL' },
+    { name: 'Nicole Carter', title: 'Service Manager', email: '', role: 'SM', region: 'Florida', location: 'Orlando, FL' },
     { name: 'Jesse Wilson', title: 'General Manager', email: '', role: 'GM', region: 'Florida', location: 'Jacksonville, FL' },
-    { name: "Mike O'Brien", title: 'Fleet Sales', email: '', role: 'IC', region: 'Florida', location: 'Jacksonville, FL' },
-    { name: 'Tony Duhart', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Jacksonville, FL' },
     { name: 'Blake Killion', title: 'Service Manager', email: '', role: 'SM', region: 'Florida', location: 'Jacksonville, FL' },
-    { name: 'Olivia Higginbotham', title: 'Truck Sales', email: '', role: 'IC', region: 'Florida', location: 'Jacksonville, FL' },
-    { name: 'Molly Wilson', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Jacksonville, FL' },
     { name: 'Brian Scott', title: 'Parts Manager', email: '', role: 'PM', region: 'Florida', location: 'Jacksonville, FL' },
-    { name: 'George Sharpe', title: 'Truck Sales', email: '', role: 'IC', region: 'Florida', location: 'Jacksonville, FL' },
-    { name: 'Cameron Mastin', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Jacksonville, FL' },
-    { name: 'Kaitlin Wittman', title: 'Leasing Account Manager', email: '', role: 'IC', region: 'Florida', location: 'Jacksonville, FL' },
     { name: 'Will Harris', title: 'Parts Manager', email: '', role: 'PM', region: 'Florida', location: 'Ocala, FL' },
     { name: 'Eric Riddle', title: 'Service Manager', email: '', role: 'SM', region: 'Florida', location: 'Ocala, FL' },
-    { name: 'Renee Ozment', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Ocala, FL' },
-    { name: 'Danny Nippers', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Ocala, FL' },
-    { name: 'Billy Munroe', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Ocala, FL' },
-    { name: 'Ron Wilson', title: 'Fleet Sales', email: '', role: 'IC', region: 'Florida', location: 'Ocala, FL' },
-    { name: 'Sally Wilson', title: 'Municipal & Fire Sales', email: '', role: 'IC', region: 'Florida', location: 'Ocala, FL' },
-    { name: 'Tracy LaMonte', title: 'Truck Sales', email: '', role: 'IC', region: 'Florida', location: 'Ocala, FL' },
-    { name: 'Nicole Carter', title: 'Service Manager', email: '', role: 'SM', region: 'Florida', location: 'Daytona Beach, FL' },
-    { name: 'Brandon Crawford', title: 'Parts Manager', email: '', role: 'PM', region: 'Florida', location: 'Daytona Beach, FL' },
-    { name: 'Chris Ocheltree', title: 'Parts Sales', email: '', role: 'IC', region: 'Florida', location: 'Daytona Beach, FL' }
+    { name: 'Sally Wilson', title: 'Director of Municipal Sales', email: '', role: 'Director', region: 'Florida', location: 'Ocala, FL' },
+    { name: 'Brandon Crawford', title: 'Parts Manager', email: '', role: 'PM', region: 'Florida', location: 'Daytona Beach, FL' }
 ];
 
 let stanceData = {};
@@ -299,6 +325,7 @@ function createPersonCard(person) {
     const initials = getInitials(person.name);
     const phone = phoneNumbers[person.name] || '';
     const linkedin = linkedinProfiles[person.name] || '';
+    const photo = personPhotos[person.name] || '';
 
     const card = document.createElement('div');
     card.className = 'card ' + (stance !== 'unset' ? stance : 'neutral');
@@ -308,9 +335,13 @@ function createPersonCard(person) {
     card.dataset.region = person.region;
     card.dataset.stance = stance;
 
+    const avatarContent = photo
+        ? '<img src="'+photo+'" alt="'+person.name+'" onerror="this.parentElement.innerHTML=\''+initials+'\'">'
+        : initials;
+
     card.innerHTML = `
         <div class="card-header">
-            <div class="avatar ${roleColor}">${initials}</div>
+            <div class="avatar ${roleColor}">${avatarContent}</div>
             <div class="card-info">
                 <div class="card-name">${person.name}</div>
                 <div class="card-title">${person.title}</div>
@@ -361,17 +392,11 @@ function initializeCards() {
     const ceoC = document.getElementById('ceo-container');
     ceo.forEach(p => ceoC.appendChild(createPersonCard(p)));
 
-    const evps = allPersonnel.filter(p => p.role === 'EVP');
-    const evpC = document.getElementById('evp-container');
-    evps.forEach(p => evpC.appendChild(createPersonCard(p)));
-
-    const dirs = allPersonnel.filter(p => p.role === 'Director');
+    const dirs = allPersonnel.filter(p => p.role === 'Director' && p.region === 'Corporate');
     const dirC = document.getElementById('directors-container');
     dirs.forEach(p => dirC.appendChild(createPersonCard(p)));
 
-    // Hide empty sections
     if (ceo.length === 0) { ceoC.previousElementSibling.style.display = 'none'; ceoC.style.display = 'none'; }
-    if (evps.length === 0) { evpC.previousElementSibling.style.display = 'none'; evpC.style.display = 'none'; }
     if (dirs.length === 0) { dirC.previousElementSibling.style.display = 'none'; dirC.style.display = 'none'; }
 
     const regions = [...new Set(allPersonnel.filter(p => p.location !== 'Corporate').map(p => p.region))].sort();
@@ -538,7 +563,7 @@ function exportToCSV() {
     const blob = new Blob([csv], {type:'text/csv'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'Cumberland International_Personnel_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.download = 'Cumberland_International_Leadership_' + new Date().toISOString().split('T')[0] + '.csv';
     a.click();
 }
 </script>
@@ -552,44 +577,92 @@ const orgMap = L.map('map-container', {
 });
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '\u00a9 OpenStreetMap contributors',
+    attribution: '&copy; OpenStreetMap',
     maxZoom: 18
 }).addTo(orgMap);
 
-const locations = [
-    { name: "Nashville, TN", lat: 36.1627, lng: -86.7816, color: "#FF6B6B", people: 17, state: "Tennessee" },
-    { name: "Murfreesboro, TN", lat: 35.8456, lng: -86.3903, color: "#FF6B6B", people: 2, state: "Tennessee" },
-    { name: "Orlando, FL", lat: 28.5383, lng: -81.3792, color: "#45B7D1", people: 12, state: "Florida" },
-    { name: "Jacksonville, FL", lat: 30.3322, lng: -81.6557, color: "#45B7D1", people: 10, state: "Florida" },
-    { name: "Ocala, FL", lat: 29.1872, lng: -82.1401, color: "#45B7D1", people: 8, state: "Florida" },
-    { name: "Daytona Beach, FL", lat: 29.2108, lng: -81.0228, color: "#45B7D1", people: 3, state: "Florida" }
+const orgLocations = [
+    {name: 'Nashville, TN', lat: 36.1627, lng: -86.7816, region: 'Tennessee'},
+    {name: 'Murfreesboro, TN', lat: 35.8456, lng: -86.3903, region: 'Tennessee'},
+    {name: 'Orlando, FL', lat: 28.5383, lng: -81.3792, region: 'Florida'},
+    {name: 'Jacksonville, FL', lat: 30.3322, lng: -81.6557, region: 'Florida'},
+    {name: 'Ocala, FL', lat: 29.1872, lng: -82.1401, region: 'Florida'},
+    {name: 'Daytona Beach, FL', lat: 29.2108, lng: -81.0228, region: 'Florida'}
 ];
 
-locations.forEach(loc => {
+const regionColors = { "Tennessee": "#FF6B6B", "Florida": "#4ECDC4" };
+
+orgLocations.forEach(loc => {
+    const color = regionColors[loc.region] || '#F59E0B';
     const marker = L.circleMarker([loc.lat, loc.lng], {
-        radius: Math.max(8, Math.sqrt(loc.people) * 5),
-        fillColor: loc.color,
-        color: '#fff',
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.8
+        radius: 8, fillColor: color, color: '#000', weight: 1.5, opacity: 1, fillOpacity: 0.9
     }).addTo(orgMap);
-    marker.bindPopup('<b>' + loc.name + '</b><br>' + loc.people + ' personnel');
-    marker.bindTooltip(loc.name, {permanent: true, direction: 'top', offset: [0, -10], className: 'map-label'});
+
+    marker.bindPopup('<strong>' + loc.name + '</strong><br><span style="color:' + color + '">' + loc.region + '</span>');
+    marker.bindTooltip(loc.name, { permanent: true, direction: 'right', offset: [10, 0], className: 'org-label' });
+    marker._orgName = loc.name;
+
+    marker.on('click', function() {
+        currentLocationFilter = currentLocationFilter === loc.name ? '' : loc.name;
+        applyFilters();
+        updateMarkerHighlight();
+    });
 });
 
-const legend = L.control({position: 'bottomright'});
-legend.onAdd = function(map) {
-    const div = L.DomUtil.create('div', 'info legend');
-    div.style.cssText = 'background:white;padding:10px 14px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);font-size:13px;line-height:1.8;';
-    div.innerHTML = '<div style="font-weight:700;margin-bottom:4px;color:#1E293B;">Regions</div><div style="color:#1E293B;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#45B7D1;margin-right:4px;"></span>Florida</div><div style="color:#1E293B;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#FF6B6B;margin-right:4px;"></span>Tennessee</div>';
+function updateMarkerHighlight() {
+    orgMap.eachLayer(function(layer) {
+        if (layer instanceof L.CircleMarker) {
+            if (currentLocationFilter) {
+                const m = orgLocations.find(l => l.name === currentLocationFilter);
+                if (m && layer.getLatLng().lat === m.lat && layer.getLatLng().lng === m.lng) {
+                    layer.setStyle({weight: 3, opacity: 1});
+                } else {
+                    layer.setStyle({weight: 1.5, opacity: 0.5});
+                }
+            } else {
+                layer.setStyle({weight: 1.5, opacity: 1});
+            }
+        }
+    });
+}
+
+const legend = L.control({position: 'bottomleft'});
+legend.onAdd = function() {
+    const div = L.DomUtil.create('div');
+    div.style.cssText = 'background:#FFFFFF;padding:12px 16px;border-radius:8px;border:1px solid #E2E8F0;color:#1E293B;font-family:system-ui,sans-serif;font-size:12px;';
+    div.innerHTML = '<div style="font-weight:700;font-size:14px;color:#F59E0B;margin-bottom:8px;">CUMBERLAND INTERNATIONAL</div>' +
+        '<div style="font-size:11px;color:#64748B;margin-bottom:10px;">OPERATIONS</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:14px;"><div style="color:#1E293B;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4ECDC4;margin-right:4px;"></span>Florida</div> <div style="color:#1E293B;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#FF6B6B;margin-right:4px;"></span>Tennessee</div></div>';
     return div;
 };
 legend.addTo(orgMap);
 
 const labelStyle = document.createElement('style');
-labelStyle.textContent = '.map-label{background:transparent!important;border:none!important;box-shadow:none!important;font-size:11px;font-weight:700;color:#1E293B;text-shadow:1px 1px 2px white,-1px -1px 2px white,1px -1px 2px white,-1px 1px 2px white;}';
+labelStyle.textContent = '.org-label { background:rgba(255,255,255,0.95)!important; color:#1E293B!important; border:1px solid #E2E8F0!important; border-radius:4px!important; padding:2px 6px!important; font-size:11px!important; font-weight:600!important; font-family:system-ui,sans-serif!important; box-shadow:none!important; white-space:nowrap!important; } .org-label::before { border-right-color:rgba(255,255,255,0.95)!important; } .org-label-hidden { display:none!important; }';
 document.head.appendChild(labelStyle);
+
+function resolveOverlaps() {
+    const tooltips = [];
+    orgMap.eachLayer(function(layer) {
+        if (layer instanceof L.CircleMarker && layer.getTooltip()) {
+            const tt = layer.getTooltip();
+            const el = tt.getElement();
+            if (el) {
+                el.classList.remove('org-label-hidden');
+                const rect = el.getBoundingClientRect();
+                tooltips.push({ el, rect, layer });
+            }
+        }
+    });
+    tooltips.sort((a,b) => a.layer.getLatLng().lng - b.layer.getLatLng().lng);
+    const visible = [];
+    tooltips.forEach(t => {
+        const overlaps = visible.some(v => !(t.rect.right < v.rect.left || t.rect.left > v.rect.right || t.rect.bottom < v.rect.top || t.rect.top > v.rect.bottom));
+        if (overlaps) { t.el.classList.add('org-label-hidden'); } else { visible.push(t); }
+    });
+}
+orgMap.on('zoomend moveend', resolveOverlaps);
+setTimeout(resolveOverlaps, 500);
 </script>
 </body>
 </html>
