@@ -36,7 +36,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#D5DAE
 
 .grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:24px;padding:12px 40px 24px}
 
-.card{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;transition:all 0.2s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.card{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:24px;transition:all 0.s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .card:hover{border-color:#F59E0B;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.1)}
 .card .accent{position:absolute;top:0;left:0;right:0;height:6px}
 .accent-green{background:#10B981}
@@ -265,7 +265,7 @@ const customerLogos = {
   "Truckworx": { url: "https://truckworx.nyc3.cdn.digitaloceanspaces.com/wp-content/uploads/20250417122003/truckworx_logo.png", border: "#D22630" },
   "Bruckner's": { url: "https://brucknerstprod.wpenginepowered.com/wp-content/uploads/2023/07/cropped-dealer-logo.png", border: "#003DA5", bg: "#003DA5" },
   "TAG Truck Center": { url: "logos/lonestar_tag.png", border: "#E31837", bg: "#0a0a0a" },
-  "McMahon Truck Centers": { url: "https://mcmahontrucks.com/wp-content/uploads/2024/03/MTC-Logo-No-Tag.svg", border: "#003DA5" },
+  "McMahon Truck Centers": { url: "https://mcmahontrucks.com/wp-content/uploads/2024/03/MTC-Logo-No-Tag", border: "#003DA5" },
   "Jim Hawk Truck Trailers": { url: "logos/jim_hawk.svg", border: "#E31837" },
   "TranSource, Inc.": { url: "https://www.transourcetrucks.com/images/transourcetrucks-logo.png", border: "#D22630" },
   "Baltimore Potomac Truck Centers": { url: "https://www.bptruckcenters.com/assets/BP_Logo.png", border: "#003DA5" },
@@ -641,7 +641,7 @@ function renderCurrentCard(c) {
       <div class="fw-row"><span class="fw-label">Utilization:</span> ${c.utilization||'<span style="color:#CBD5E1;font-style:italic;">---</span>'}</div>
     </div>
     ${c.blockers?`<div class="notes"><strong>Blockers:</strong> ${c.blockers}</div>`:''}
-    ${c.expansion?`<div class="notes"><strong>Expansion:</strong> ${c.expansion}</div>`:''}
+
     ${c.pendingExpansion && c.pendingExpansion.length > 0 ? '<div style="margin-top:8px;padding:10px;background:#FFF8F0;border:1px solid #F5A623;border-radius:8px;"><div style="font-weight:700;color:#E88C2A;font-size:12px;text-transform:uppercase;margin-bottom:6px;">\u{1F4C8} Pending Expansion Pipeline</div>' + c.pendingExpansion.map(d => '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #FDE8CD;"><span style="font-size:13px;color:#1E293B;">' + d.deal + '</span><span style="font-size:13px;"><strong style="color:#D97706;">' + fmt$(d.amount) + '</strong> <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(245,158,11,0.1);color:#D97706;font-weight:600;">' + d.stage + '</span></span></div>').join('') + '<div style="text-align:right;font-size:13px;color:#64748B;margin-top:6px;">Pipeline Total: <strong>' + fmt$(c.pendingExpansion.reduce((s,d)=>s+d.amount,0)) + '</strong></div></div>' : ''}
     ${referralsHtml}
     <div class="links">${lh}</div>
